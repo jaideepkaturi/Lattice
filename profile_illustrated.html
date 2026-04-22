@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dr. Jaideep Katuri — Research Profile</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Fira+Code:wght@300;400&family=Source+Serif+4:ital,wght@0,300;0,400;1,300&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --cream: #f7f3ed;
+      --ink:   #1a1a2a;
+      --ink-mid: #5a5a72;
+      --ink-dim: #9898aa;
+      --rule:  #ddd8cf;
+      --blue:  #1d4ed8;
+      --amber: #b45309;
+      --amber-bg: #fffbeb;
+      --dark:  #0b1120;
+      --display: 'Cormorant Garamond', Georgia, serif;
+      --mono:  'Fira Code', monospace;
+      --body:  'Source Serif 4', Georgia, serif;
+    }
+
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--body); background: var(--cream); color: var(--ink); line-height: 1.6; }
+
+    .page { max-width: 900px; margin: 0 auto; padding: 80px 48px 120px; }
+
+    /* ── HERO ── */
+    .hero { padding-bottom: 64px; border-bottom: 1px solid var(--rule); margin-bottom: 72px; }
+    .hero-location { font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-dim); margin-bottom: 16px; }
+    .hero-name { font-family: var(--display); font-size: clamp(3.8rem,9vw,7rem); font-weight: 300; line-height: 0.92; letter-spacing: -0.02em; margin-bottom: 28px; }
+    .hero-name em { font-style: italic; font-weight: 300; }
+    .hero-role { font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--blue); margin-bottom: 24px; }
+    .hero-bio { font-size: 1.1rem; font-weight: 300; color: var(--ink-mid); max-width: 580px; line-height: 1.75; }
+    .hero-contact { margin-top: 28px; display: flex; gap: 24px; flex-wrap: wrap; }
+    .hero-contact a { font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.08em; color: var(--ink-dim); text-decoration: none; transition: color 0.15s; }
+    .hero-contact a:hover { color: var(--blue); }
+
+    /* ── SECTION ── */
+    .section { margin-bottom: 72px; }
+    .section-label { font-family: var(--mono); font-size: 0.6rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--ink-dim); margin-bottom: 28px; display: flex; align-items: center; gap: 14px; }
+    .section-label::after { content: ''; flex: 1; height: 1px; background: var(--rule); }
+
+    /* ── EXPERTISE ── */
+    .pillars { display: grid; grid-template-columns: repeat(3,1fr); gap: 1px; background: var(--rule); border: 1px solid var(--rule); }
+    .pillar { background: var(--cream); padding: 28px 24px; }
+    .pillar-icon { font-family: var(--mono); font-size: 0.55rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--blue); margin-bottom: 10px; }
+    .pillar-title { font-family: var(--display); font-size: 1.45rem; font-weight: 400; color: var(--ink); line-height: 1.2; margin-bottom: 8px; }
+    .pillar-desc { font-size: 0.8rem; color: var(--ink-mid); font-weight: 300; line-height: 1.55; }
+
+    /* ── RESEARCH PANELS ── */
+    .theme-panel {
+      position: relative;
+      min-height: 350px;
+      margin-bottom: 18px;
+      padding: 34px 32px;
+      border-top: 1px solid var(--rule);
+      overflow: hidden;
+    }
+    .theme-panel:last-child { border-bottom: 1px solid var(--rule); }
+    .theme-panel.flip { direction: ltr; }
+    .theme-panel.flip > * { direction: ltr; }
+
+    .theme-illo {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 48%;
+      z-index: 0;
+      overflow: hidden;
+      pointer-events: none;
+      opacity: 0.38;
+      mix-blend-mode: multiply;
+      mask-image: linear-gradient(90deg, transparent 0%, black 30%, black 100%);
+    }
+    .theme-illo.is-subtle {
+      background: #fbfaf7;
+    }
+    .theme-illo.is-collective {
+      opacity: 0.54;
+    }
+    .theme-illo.is-subtle::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background:
+        linear-gradient(90deg, rgba(255,255,255,0.34), rgba(255,255,255,0) 38%),
+        radial-gradient(circle at 75% 45%, rgba(29,78,216,0.035), transparent 42%);
+    }
+    .theme-panel.flip .theme-illo,
+    .theme-panel:not(.flip) .theme-illo { border: none; }
+
+    .theme-illo svg { display: block; width: 100%; height: 100%; }
+
+    .theme-text {
+      position: relative;
+      z-index: 1;
+      max-width: 62%;
+      min-height: 282px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .theme-num { font-family: var(--mono); font-size: 0.55rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--blue); margin-bottom: 10px; }
+    .theme-title { font-family: var(--display); font-size: 1.7rem; font-weight: 400; line-height: 1.15; color: var(--ink); margin-bottom: 16px; }
+    .theme-desc { font-size: 0.875rem; font-weight: 300; color: var(--ink-mid); line-height: 1.75; margin-bottom: 20px; }
+    .theme-papers { font-family: var(--mono); font-size: 0.58rem; color: var(--ink-dim); letter-spacing: 0.05em; line-height: 1.7; border-top: 1px solid var(--rule); padding-top: 14px; }
+    .theme-papers strong { color: var(--ink-mid); }
+
+    /* ── CAREER / EDUCATION ── */
+    .tl-row { display: grid; grid-template-columns: 220px 1fr 100px; gap: 0 24px; align-items: baseline; padding: 14px 0; border-bottom: 1px solid var(--rule); }
+    .tl-row:first-child { padding-top: 0; }
+    .tl-row:last-child { border-bottom: none; }
+    .tl-org { font-size: 0.92rem; font-weight: 400; }
+    .tl-role { font-size: 0.85rem; font-weight: 300; color: var(--ink-mid); font-style: italic; }
+    .tl-date { font-family: var(--mono); font-size: 0.6rem; color: var(--ink-dim); text-align: right; }
+    .tl-row.placeholder .tl-org { color: var(--ink-dim); }
+    .tl-row.placeholder .tl-role { font-style: normal; font-family: var(--mono); font-size: 0.58rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--amber); background: var(--amber-bg); padding: 2px 8px; align-self: center; }
+    .edu-row { display: grid; grid-template-columns: 220px 1fr 60px; gap: 0 24px; align-items: baseline; padding: 14px 0; border-bottom: 1px solid var(--rule); }
+    .edu-row:first-child { padding-top: 0; }
+    .edu-row:last-child { border-bottom: none; }
+    .edu-degree { font-size: 0.92rem; }
+    .edu-inst { font-size: 0.85rem; font-weight: 300; color: var(--ink-mid); }
+    .edu-year { font-family: var(--mono); font-size: 0.6rem; color: var(--ink-dim); text-align: right; }
+
+    /* ── SKILLS ── */
+    .skill-groups { display: flex; flex-direction: column; gap: 18px; }
+    .skill-group { display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap; }
+    .skill-group-name { font-family: var(--mono); font-size: 0.58rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink-dim); min-width: 120px; flex-shrink: 0; }
+    .skill-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+    .skill-tag { font-family: var(--mono); font-size: 0.62rem; color: var(--ink-mid); border: 1px solid var(--rule); padding: 3px 10px; background: white; }
+
+    /* ── PUBLICATIONS ── */
+    .pub-summary { display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap; padding: 20px 24px; border: 1px solid var(--rule); background: white; }
+    .pub-summary-text { font-size: 0.9rem; font-weight: 300; color: var(--ink-mid); line-height: 1.6; }
+    .pub-summary-text em { font-style: italic; color: var(--ink); }
+    .scholar-link { display: inline-flex; align-items: center; gap: 7px; font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--blue); text-decoration: none; white-space: nowrap; }
+    .scholar-link:hover { opacity: 0.7; }
+
+    /* ── FOOTER ── */
+    .footer { margin-top: 72px; padding-top: 28px; border-top: 1px solid var(--rule); display: flex; justify-content: space-between; align-items: center; }
+    .footer-name { font-family: var(--display); font-size: 1rem; font-weight: 300; font-style: italic; color: var(--ink-dim); }
+    .footer-links { display: flex; gap: 20px; }
+    .footer-links a { font-family: var(--mono); font-size: 0.58rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-dim); text-decoration: none; }
+    .footer-links a:hover { color: var(--blue); }
+
+    /* ── ACCENT ANIMATIONS ── */
+
+    /* Wave SVG: slow opacity breathe */
+    @keyframes wavePulse { from { opacity: 0.78; } to { opacity: 1.0; } }
+    #wave-svg { animation: wavePulse 8s ease-in-out infinite alternate; }
+
+    /* Scattered dots: slow individual opacity pulse */
+    @keyframes dotPulse { from { opacity: var(--op-lo); } to { opacity: var(--op-hi); } }
+    .scatter-dot { animation: dotPulse var(--dur, 4s) ease-in-out infinite alternate; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 700px) {
+      .page { padding: 40px 24px 80px; }
+      .pillars { grid-template-columns: 1fr; }
+      .theme-panel { min-height: auto; padding: 28px 0; }
+      .theme-panel.flip { direction: ltr; }
+      .theme-illo {
+        position: absolute;
+        inset: 0 0 auto auto;
+        width: 56%;
+        height: 180px;
+        opacity: 0.18;
+        border: none !important;
+      }
+      .theme-text { max-width: none; min-height: auto; }
+      .tl-row, .edu-row { grid-template-columns: 1fr auto; }
+      .tl-role, .edu-inst { grid-column: 1 / -1; }
+      .skill-group { flex-direction: column; gap: 8px; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ── HERO ── -->
+  <header class="hero">
+    <div class="hero-location">Clinton, NJ &nbsp;·&nbsp; USA</div>
+    <h1 class="hero-name">Jaideep<br><em>Katuri</em></h1>
+    <div class="hero-role">Experimental Physicist &nbsp;·&nbsp; ExxonMobil</div>
+    <p class="hero-bio">Physicist working at the intersection of soft matter, biological systems, and microrobotics — building experimental apparatus and computational tools to study how small things move, self-organize, and respond to their environment.</p>
+    <div class="hero-contact">
+      <a href="mailto:jaideep.katuri@exxonmobil.com">jaideep.katuri@exxonmobil.com</a>
+      <a href="https://www.linkedin.com/in/jaideep-katuri/" target="_blank">LinkedIn</a>
+    </div>
+  </header>
+
+  <!-- ── EXPERTISE ── -->
+  <section class="section">
+    <div class="section-label">Expertise</div>
+    <div class="pillars">
+      <div class="pillar">
+        <div class="pillar-icon">01</div>
+        <div class="pillar-title">Soft Matter &amp; Biological Physics</div>
+        <div class="pillar-desc">Active colloids, liquid crystals, biofilms, microswimmers, collective behavior</div>
+      </div>
+      <div class="pillar">
+        <div class="pillar-icon">02</div>
+        <div class="pillar-title">Micro &amp; Nanofabrication</div>
+        <div class="pillar-desc">Two-photon lithography, direct laser writing, e-beam deposition, microfluidics</div>
+      </div>
+      <div class="pillar">
+        <div class="pillar-icon">03</div>
+        <div class="pillar-title">Imaging &amp; Computation</div>
+        <div class="pillar-desc">Advanced microscopy, deep learning segmentation, particle tracking, PIV/PTV</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── RESEARCH ── -->
+  <section class="section">
+    <div class="section-label">Research</div>
+
+    <!-- Theme 1: Steering Motion — converging stream lines, dark bg -->
+    <div class="theme-panel">
+      <div class="theme-illo">
+        <svg viewBox="0 0 440 300" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+          <rect width="440" height="300" fill="#fbfaf7"/>
+
+          <!-- Nine convergent paths, symmetric about y=150 -->
+          <!-- Outer paths: dim blue. Center path: bright. -->
+          <path id="fl1" d="M-2,10  C 100,12  230,62  440,128" fill="none" stroke="#1d4ed8" stroke-width="0.8" opacity="0.12"/>
+          <path id="fl2" d="M-2,46  C 100,47  230,84  440,135" fill="none" stroke="#1d4ed8" stroke-width="0.9" opacity="0.16"/>
+          <path id="fl3" d="M-2,84  C 100,85  230,104 440,141" fill="none" stroke="#1d4ed8" stroke-width="1.0" opacity="0.20"/>
+          <path id="fl4" d="M-2,122 C 100,122 230,128 440,147" fill="none" stroke="#1d4ed8" stroke-width="1.0" opacity="0.24"/>
+          <path id="fl5" d="M-2,150 C 146,150 294,150 442,150" fill="none" stroke="#1d4ed8" stroke-width="1.2" opacity="0.30"/>
+          <path id="fl6" d="M-2,178 C 100,178 230,172 440,153" fill="none" stroke="#1d4ed8" stroke-width="1.0" opacity="0.24"/>
+          <path id="fl7" d="M-2,216 C 100,215 230,196 440,159" fill="none" stroke="#1d4ed8" stroke-width="1.0" opacity="0.20"/>
+          <path id="fl8" d="M-2,254 C 100,253 230,216 440,165" fill="none" stroke="#1d4ed8" stroke-width="0.9" opacity="0.16"/>
+          <path id="fl9" d="M-2,290 C 100,288 230,238 440,172" fill="none" stroke="#1d4ed8" stroke-width="0.8" opacity="0.12"/>
+
+          <!-- Accent: small dots travelling along 5 of the paths -->
+          <circle r="1.7" fill="#1d4ed8" opacity="0.32">
+            <animateMotion dur="10s" repeatCount="indefinite" begin="0s"><mpath href="#fl2"/></animateMotion>
+          </circle>
+          <circle r="1.9" fill="#1d4ed8" opacity="0.36">
+            <animateMotion dur="9s" repeatCount="indefinite" begin="1.3s"><mpath href="#fl4"/></animateMotion>
+          </circle>
+          <circle r="2.1" fill="#1d4ed8" opacity="0.40">
+            <animateMotion dur="8s" repeatCount="indefinite" begin="0.4s"><mpath href="#fl5"/></animateMotion>
+          </circle>
+          <circle r="1.9" fill="#1d4ed8" opacity="0.36">
+            <animateMotion dur="9s" repeatCount="indefinite" begin="2.7s"><mpath href="#fl6"/></animateMotion>
+          </circle>
+          <circle r="1.7" fill="#1d4ed8" opacity="0.32">
+            <animateMotion dur="10s" repeatCount="indefinite" begin="1.9s"><mpath href="#fl8"/></animateMotion>
+          </circle>
+        </svg>
+      </div>
+      <div class="theme-text">
+        <div class="theme-num">Theme 01</div>
+        <h2 class="theme-title">Active Transport in Confined Geometries</h2>
+        <p class="theme-desc">Chemically active Janus colloids provide a controlled platform for isolating how self-generated solute fields, phoretic slip, hydrodynamic image flows, and steric confinement determine microswimmer transport. In pressure-driven channels, spherical swimmers acquire a deterministic cross-stream orientation through the coupling of near-wall swimming activity to imposed shear, producing migration transverse to streamlines. At structured boundaries, submicron steps, posts, and asymmetric ratchets rectify stochastic active trajectories by aligning particle orientation through topography-mediated phoretic and hydrodynamic interactions. Extending these ideas to liquid–liquid interfaces shows that interfacial alignment and modified propulsion speeds can generate long-lived guidance in geometries relevant to complex fluids and microfluidic transport.</p>
+        <div class="theme-papers">
+          <strong>Key publications —</strong><br>
+          Cross-stream migration · <em>Sci. Adv.</em> 2018<br>
+          Micropatterned ratchets · <em>ACS Nano</em> 2018<br>
+          Topographical pathways · <em>Nat. Commun.</em> 2016<br>
+          Liquid–liquid interface · <em>Soft Matter</em> 2019
+        </div>
+      </div>
+    </div>
+
+    <!-- Theme 2: Collective States — simple coherent flock/vortex -->
+    <div class="theme-panel flip">
+      <div class="theme-illo is-subtle is-collective">
+        <svg viewBox="0 0 440 300" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+          <rect width="440" height="300" fill="#fbfaf7"/>
+
+          <defs>
+            <path id="flock-triangle" d="M13,0 L-2,7 L2,0 L-2,-7 Z"/>
+          </defs>
+
+          <g transform="translate(276 150)">
+            <g>
+              <animateTransform attributeName="transform" type="rotate" from="0 0 0" to="360 0 0" dur="52s" repeatCount="indefinite"/>
+              <circle cx="0" cy="0" r="92" fill="none" stroke="#1d4ed8" stroke-width="1" opacity="0.06"/>
+              <circle cx="0" cy="0" r="58" fill="none" stroke="#1d4ed8" stroke-width="1" opacity="0.09"/>
+              <g fill="#1a1a2a" opacity="0.42">
+                <use href="#flock-triangle" transform="translate(86 -8) rotate(98) scale(1.08)"/>
+                <use href="#flock-triangle" transform="translate(56 46) rotate(142) scale(0.92)"/>
+                <use href="#flock-triangle" transform="translate(13 76) rotate(172) scale(1.02)"/>
+                <use href="#flock-triangle" transform="translate(-42 54) rotate(218) scale(0.86)"/>
+                <use href="#flock-triangle" transform="translate(-74 17) rotate(260) scale(1.04)"/>
+                <use href="#flock-triangle" transform="translate(-58 -37) rotate(302) scale(0.90)"/>
+                <use href="#flock-triangle" transform="translate(-14 -72) rotate(338) scale(1.00)"/>
+                <use href="#flock-triangle" transform="translate(37 -62) rotate(28) scale(0.84)"/>
+                <use href="#flock-triangle" transform="translate(75 -27) rotate(64) scale(1.10)"/>
+              </g>
+              <g fill="#1d4ed8" opacity="0.34">
+                <use href="#flock-triangle" transform="translate(43 8) rotate(112) scale(0.76)"/>
+                <use href="#flock-triangle" transform="translate(10 39) rotate(166) scale(0.70)"/>
+                <use href="#flock-triangle" transform="translate(-31 22) rotate(236) scale(0.82)"/>
+                <use href="#flock-triangle" transform="translate(-30 -23) rotate(296) scale(0.68)"/>
+                <use href="#flock-triangle" transform="translate(10 -46) rotate(4) scale(0.80)"/>
+                <use href="#flock-triangle" transform="translate(49 -16) rotate(58) scale(0.72)"/>
+              </g>
+            </g>
+          </g>
+        </svg>
+      </div>
+      <div class="theme-text">
+        <div class="theme-num">Theme 02</div>
+        <h2 class="theme-title">Emergent Collective States</h2>
+        <p class="theme-desc">The central question is how simple driven units generate collective states that cannot be inferred from single-particle dynamics. In populations of shape-anisotropic active Janus particles, induced-charge electrophoretic propulsion and hydrodynamically assisted bound-state formation produce sparse, dynamic arrested-motility phases, distinct from dense motility-induced phase separation or passive jamming. In chiral active fluids, rotating magnetic fields convert individual colloidal spin into mesoscale circulation through coupled hydrodynamic and dipolar interactions, generating cohesive clusters with edge currents. Adding light-activated diffusiophoretic interactions provides a reversible control parameter for cluster cohesion, network porosity, and the transition between compact and expanded collective states.</p>
+        <div class="theme-papers">
+          <strong>Key publications —</strong><br>
+          Active chiral fluids · <em>Commun. Phys.</em> 2024<br>
+          Arrested-motility states · <em>Sci. Adv.</em> 2022<br>
+          Janus micromotor assembly · <em>Small</em> 2016
+        </div>
+      </div>
+    </div>
+
+    <!-- Theme 3: Structured Media — wave field, dark bg, generated by JS -->
+    <div class="theme-panel">
+      <div class="theme-illo">
+        <svg id="wave-svg" viewBox="0 0 440 300" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+          <rect width="440" height="300" fill="#fbfaf7"/>
+          <!-- strokes injected by script -->
+        </svg>
+      </div>
+      <div class="theme-text">
+        <div class="theme-num">Theme 03</div>
+        <h2 class="theme-title">Activity in Structured Media</h2>
+        <p class="theme-desc">Structured media introduce orientational elasticity, anisotropic dissipation, and topological constraints that fundamentally alter active transport. Acoustically powered bubble swimmers in lyotropic liquid crystals couple their propulsion to the local nematic director, exhibiting bimodal swimming states parallel or perpendicular to the director while acoustic streaming locally melts order and nucleates trailing defects. At the material scale, ultrasonic forcing of a lyotropic chromonic liquid crystal creates a fully synthetic active nematic: acoustic energy is converted into microscopic extensile stresses that destabilize long-range orientational order, drive undulation instabilities, proliferate topological defects, and produce persistent director-field vortices at high activity.</p>
+        <div class="theme-papers">
+          <strong>Key publications —</strong><br>
+          Synthetic active liquid crystals · <em>Adv. Mater.</em> 2025<br>
+          Swimmers in liquid crystals · <em>Soft Matter</em> 2022<br>
+          Non-equilibrium interactions · <em>Sci. Adv.</em> 2021
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ── CAREER ── -->
+  <section class="section">
+    <div class="section-label">Career</div>
+    <div class="timeline">
+      <div class="tl-row placeholder">
+        <div class="tl-org">ExxonMobil</div>
+        <div class="tl-role">Details to be added</div>
+        <div class="tl-date">2025 –</div>
+      </div>
+      <div class="tl-row">
+        <div class="tl-org">Nat'l High Magnetic Field Lab / FAMU-FSU</div>
+        <div class="tl-role">Postdoctoral Researcher</div>
+        <div class="tl-date">2022 – 2025</div>
+      </div>
+      <div class="tl-row">
+        <div class="tl-org">Argonne National Laboratory</div>
+        <div class="tl-role">Postdoctoral Appointee</div>
+        <div class="tl-date">2019 – 2022</div>
+      </div>
+      <div class="tl-row">
+        <div class="tl-org">Institute for Bioengineering of Catalonia</div>
+        <div class="tl-role">Graduate Researcher</div>
+        <div class="tl-date">2016 – 2018</div>
+      </div>
+      <div class="tl-row">
+        <div class="tl-org">Max Planck Institute for Intelligent Systems</div>
+        <div class="tl-role">Graduate Researcher</div>
+        <div class="tl-date">2015 – 2016</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── EDUCATION ── -->
+  <section class="section">
+    <div class="section-label">Education</div>
+    <div class="timeline">
+      <div class="edu-row">
+        <div class="edu-degree">PhD Physics, <em>Cum Laude</em></div>
+        <div class="edu-inst">University of Barcelona, Spain</div>
+        <div class="edu-year">2018</div>
+      </div>
+      <div class="edu-row">
+        <div class="edu-degree">MSc Physics</div>
+        <div class="edu-inst">University of Stuttgart, Germany</div>
+        <div class="edu-year">2014</div>
+      </div>
+      <div class="edu-row">
+        <div class="edu-degree">BSc Physics</div>
+        <div class="edu-inst">Sri Sathya Sai Institute, India</div>
+        <div class="edu-year">2012</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── SKILLS ── -->
+  <section class="section">
+    <div class="section-label">Skills</div>
+    <div class="skill-groups">
+      <div class="skill-group">
+        <span class="skill-group-name">Fabrication</span>
+        <div class="skill-tags">
+          <span class="skill-tag">2PP Lithography</span><span class="skill-tag">Direct Laser Writing</span><span class="skill-tag">Photolithography</span><span class="skill-tag">Soft Lithography</span><span class="skill-tag">E-beam Deposition</span><span class="skill-tag">Sputter Deposition</span><span class="skill-tag">Microfluidics</span><span class="skill-tag">Colloidal Synthesis</span>
+        </div>
+      </div>
+      <div class="skill-group">
+        <span class="skill-group-name">Microscopy</span>
+        <div class="skill-tags">
+          <span class="skill-tag">Confocal</span><span class="skill-tag">Polarization</span><span class="skill-tag">SEM</span><span class="skill-tag">Optical Tweezers</span>
+        </div>
+      </div>
+      <div class="skill-group">
+        <span class="skill-group-name">Programming</span>
+        <div class="skill-tags">
+          <span class="skill-tag">Python</span><span class="skill-tag">MATLAB</span><span class="skill-tag">OpenCV</span><span class="skill-tag">PyTorch</span><span class="skill-tag">OpenPIV</span><span class="skill-tag">NumPy / SciPy</span><span class="skill-tag">pandas</span><span class="skill-tag">matplotlib</span>
+        </div>
+      </div>
+      <div class="skill-group">
+        <span class="skill-group-name">Design</span>
+        <div class="skill-tags">
+          <span class="skill-tag">KLayout</span><span class="skill-tag">AutoCAD</span><span class="skill-tag">Blender</span><span class="skill-tag">LabVIEW</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── PUBLICATIONS ── -->
+  <section class="section">
+    <div class="section-label">Publications</div>
+    <div class="pub-summary">
+      <p class="pub-summary-text">20+ peer-reviewed publications in <em>Nature Communications</em>, <em>Science Advances</em>, <em>Advanced Materials</em>, <em>ACS Nano</em>, <em>Soft Matter</em>, and others.</p>
+      <a class="scholar-link" href="https://scholar.google.com/citations?user=BnScrigAAAAJ&hl=en&oi=ao" target="_blank" rel="noopener">
+        View on Google Scholar
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      </a>
+    </div>
+  </section>
+
+  <!-- ── FOOTER ── -->
+  <footer class="footer">
+    <span class="footer-name">Dr. Jaideep Katuri</span>
+    <div class="footer-links">
+      <a href="mailto:jaideep.katuri@exxonmobil.com">Email</a>
+      <a href="https://www.linkedin.com/in/jaideep-katuri/" target="_blank">LinkedIn</a>
+    </div>
+  </footer>
+
+</div>
+
+<script>
+// Generate an animated nematic director field.
+(function () {
+  const svg = document.getElementById('wave-svg');
+  const ns  = 'http://www.w3.org/2000/svg';
+  const W = 440, H = 300, COLS = 24, ROWS = 15;
+  const cw = W / COLS, ch = H / ROWS;
+  const len = Math.min(cw, ch) * 0.34;
+  const directors = [];
+
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      const x = (c + 0.5) * cw;
+      const y = (r + 0.5) * ch;
+
+      // Two superimposed sine waves create the baseline director field.
+      const baseAngle = Math.sin(c * 0.44 + r * 0.14) * 1.08
+                      + Math.sin(r * 0.58 + c * 0.09) * 0.34;
+
+      const hue  = 212 + Math.sin(baseAngle + c * 0.07) * 26;
+      const lum  = 50  + Math.cos(baseAngle * 2) * 16;
+      const alph = (0.46 + Math.abs(Math.sin(baseAngle)) * 0.32).toFixed(2);
+
+      const line = document.createElementNS(ns, 'line');
+      line.setAttribute('stroke', `hsla(${hue.toFixed(0)},52%,${lum.toFixed(0)}%,${alph})`);
+      line.setAttribute('stroke-width', '1.5');
+      line.setAttribute('stroke-linecap', 'round');
+      svg.appendChild(line);
+      directors.push({
+        line,
+        x,
+        y,
+        baseAngle,
+        phase: c * 0.42 + r * 0.31,
+        drift: Math.sin(c * 0.18) * 0.14 + Math.cos(r * 0.22) * 0.10
+      });
+    }
+  }
+
+  function draw(time) {
+    const t = time * 0.00046;
+
+    directors.forEach(({ line, x, y, baseAngle, phase, drift }) => {
+      const angle = baseAngle
+        + Math.sin(t + phase) * 0.16
+        + Math.sin(t * 0.62 + drift + x * 0.006) * 0.08;
+      const cos = Math.cos(angle);
+      const sin = Math.sin(angle);
+
+      line.setAttribute('x1', (x - len * cos).toFixed(1));
+      line.setAttribute('y1', (y - len * sin).toFixed(1));
+      line.setAttribute('x2', (x + len * cos).toFixed(1));
+      line.setAttribute('y2', (y + len * sin).toFixed(1));
+    });
+
+    requestAnimationFrame(draw);
+  }
+
+  requestAnimationFrame(draw);
+})();
+</script>
+</body>
+</html>

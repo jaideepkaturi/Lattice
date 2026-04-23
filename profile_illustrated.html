@@ -113,6 +113,104 @@
     .theme-papers { font-family: var(--mono); font-size: 0.58rem; color: var(--ink-dim); letter-spacing: 0.05em; line-height: 1.7; border-top: 1px solid var(--rule); padding-top: 14px; }
     .theme-papers strong { color: var(--ink-mid); }
 
+    /* ── CURRENT RESEARCH ── */
+    .current-panel {
+      border-top: 1px solid var(--rule);
+      border-bottom: 1px solid var(--rule);
+      padding: 28px 0 34px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+    .current-title-block { order: 1; max-width: 360px; }
+    .current-copy-block { order: 3; }
+    .current-num { font-family: var(--mono); font-size: 0.55rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--blue); margin-bottom: 12px; }
+    .placeholder-label { font-family: var(--mono); font-size: 0.54rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--amber); background: var(--amber-bg); display: inline-block; padding: 3px 9px; margin-bottom: 10px; }
+    .placeholder-title { min-height: 58px; border: 1px dashed var(--rule); background: rgba(255,255,255,0.22); }
+    .placeholder-copy { min-height: 96px; border: 1px dashed var(--rule); background: rgba(255,255,255,0.22); }
+    .current-figure {
+      order: 2;
+      aspect-ratio: 2.8;
+      background: transparent;
+      overflow: hidden;
+      margin: -2px 0 0;
+    }
+    .current-figure svg { display: block; width: 100%; height: 100%; }
+    .cr-primary,
+    .cr-secondary {
+      fill: none;
+      stroke: #b8b2a8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .cr-primary { stroke-width: 1.35; opacity: 0.18; }
+    .cr-secondary { stroke-width: 0.78; opacity: 0.075; }
+    .cr-connected { --after-stroke: #1d4ed8; }
+    .cr-secondary.cr-connected { --after-stroke: #1d4ed8; }
+    .cr-perf {
+      fill: #a8a29e;
+      opacity: 0.42;
+    }
+    .cr-well-pulse {
+      fill: #f8fafc;
+      stroke: #1d4ed8;
+      stroke-width: 2;
+      opacity: 0;
+      filter: url(#crPulseGlow);
+    }
+    .current-panel + .current-panel { margin-top: 22px; }
+    .current-figure.asphaltene-figure { aspect-ratio: 2.35; margin-top: 0; }
+    .asphaltene-figure .well-shadow { fill: none; stroke: #1a1a2a; stroke-width: 14; stroke-linecap: round; opacity: 0.16; }
+    .asphaltene-figure .well-core { fill: none; stroke: #1a1a2a; stroke-width: 4; stroke-linecap: round; opacity: 0.38; }
+    .asphaltene-figure .perf { fill: var(--blue); opacity: 0.42; }
+    .asphaltene-figure .pore-throat,
+    .asphaltene-figure .pore-link {
+      fill: none;
+      stroke: #aaa397;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .asphaltene-figure .pore-throat { stroke-width: 2.2; opacity: 0.44; }
+    .asphaltene-figure .pore-link { stroke-width: 1.25; opacity: 0.30; }
+    .asphaltene-figure .pore-body { fill: #f7f3ed; stroke: #aaa397; stroke-width: 1.4; opacity: 0.58; }
+    .asphaltene-figure .pore-body.blocked { fill: #8f8a82; stroke: #777168; opacity: 0.68; }
+    .asphaltene-figure .flow-stream,
+    .asphaltene-figure .remediation-stream {
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .asphaltene-figure .flow-stream {
+      stroke: #1d4ed8;
+      stroke-width: 2.5;
+      stroke-dasharray: 1 8;
+      opacity: 0.62;
+    }
+    .asphaltene-figure .flow-stream.entering { opacity: 0.70; }
+    .asphaltene-figure .restored-flow { opacity: 0; }
+    .asphaltene-figure .remediation-stream {
+      stroke: #b45309;
+      stroke-width: 3;
+      stroke-dasharray: 2 10;
+      opacity: 0;
+    }
+    .figure-legend {
+      order: 3;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 18px;
+      align-items: center;
+      margin-top: -8px;
+      padding-left: 118px;
+      font-family: var(--mono);
+      font-size: 0.55rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-dim);
+    }
+    .legend-item { display: inline-flex; align-items: center; gap: 7px; white-space: nowrap; }
+    .legend-swatch { width: 28px; height: 14px; display: inline-block; flex: 0 0 auto; }
+
     /* ── CAREER / EDUCATION ── */
     .tl-row { display: grid; grid-template-columns: 220px 1fr 100px; gap: 0 24px; align-items: baseline; padding: 14px 0; border-bottom: 1px solid var(--rule); }
     .tl-row:first-child { padding-top: 0; }
@@ -130,11 +228,11 @@
     .edu-year { font-family: var(--mono); font-size: 0.6rem; color: var(--ink-dim); text-align: right; }
 
     /* ── SKILLS ── */
-    .skill-groups { display: flex; flex-direction: column; gap: 18px; }
-    .skill-group { display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap; }
-    .skill-group-name { font-family: var(--mono); font-size: 0.58rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink-dim); min-width: 120px; flex-shrink: 0; }
-    .skill-tags { display: flex; flex-wrap: wrap; gap: 6px; }
-    .skill-tag { font-family: var(--mono); font-size: 0.62rem; color: var(--ink-mid); border: 1px solid var(--rule); padding: 3px 10px; background: white; }
+    .skill-groups { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--rule); border: 1px solid var(--rule); }
+    .skill-group { background: var(--cream); padding: 22px 24px 24px; }
+    .skill-group-name { font-family: var(--display); font-size: 1.35rem; font-weight: 400; line-height: 1.2; color: var(--ink); margin-bottom: 10px; }
+    .skill-desc { font-size: 0.84rem; font-weight: 300; color: var(--ink-mid); line-height: 1.65; margin-bottom: 12px; }
+    .skill-methods { font-family: var(--mono); font-size: 0.56rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-dim); line-height: 1.75; }
 
     /* ── PUBLICATIONS ── */
     .pub-summary { display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap; padding: 20px 24px; border: 1px solid var(--rule); background: white; }
@@ -175,9 +273,12 @@
         border: none !important;
       }
       .theme-text { max-width: none; min-height: auto; }
+      .current-title-block { max-width: none; }
+      .current-figure.asphaltene-figure { aspect-ratio: 1.45; }
+      .figure-legend { padding-left: 0; gap: 9px 14px; }
       .tl-row, .edu-row { grid-template-columns: 1fr auto; }
       .tl-role, .edu-inst { grid-column: 1 / -1; }
-      .skill-group { flex-direction: column; gap: 8px; }
+      .skill-groups { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -202,25 +303,328 @@
     <div class="pillars">
       <div class="pillar">
         <div class="pillar-icon">01</div>
-        <div class="pillar-title">Soft Matter &amp; Biological Physics</div>
-        <div class="pillar-desc">Active colloids, liquid crystals, biofilms, microswimmers, collective behavior</div>
+        <div class="pillar-title">Active &amp; Soft Matter Physics</div>
+        <div class="pillar-desc">Colloids, microswimmers, interfaces, liquid crystals, biofilms, and self-organizing active systems</div>
       </div>
       <div class="pillar">
         <div class="pillar-icon">02</div>
-        <div class="pillar-title">Micro &amp; Nanofabrication</div>
-        <div class="pillar-desc">Two-photon lithography, direct laser writing, e-beam deposition, microfluidics</div>
+        <div class="pillar-title">Transport in Structured Media</div>
+        <div class="pillar-desc">Confinement, patterned boundaries, porous networks, fracture pathways, and geometry-controlled flow</div>
       </div>
       <div class="pillar">
         <div class="pillar-icon">03</div>
-        <div class="pillar-title">Imaging &amp; Computation</div>
-        <div class="pillar-desc">Advanced microscopy, deep learning segmentation, particle tracking, PIV/PTV</div>
+        <div class="pillar-title">Complex Fluids &amp; Subsurface Systems</div>
+        <div class="pillar-desc">Reservoir fluids, asphaltene behavior, unconventional wells, deepwater systems, and remediation physics</div>
       </div>
     </div>
   </section>
 
-  <!-- ── RESEARCH ── -->
+  <!-- ── CURRENT RESEARCH ── -->
   <section class="section">
-    <div class="section-label">Research</div>
+    <div class="section-label">Current Research</div>
+    <div class="current-panel">
+      <div class="current-title-block">
+        <div class="current-num">Current Research 01</div>
+        <span class="placeholder-label">Title placeholder</span>
+        <div class="placeholder-title"></div>
+      </div>
+
+      <div class="current-figure">
+        <svg viewBox="0 100 720 255" xmlns="http://www.w3.org/2000/svg" aria-label="Fracture rejuvenation in a producing horizontal well">
+          <defs>
+            <filter id="crPulseGlow" x="-70%" y="-70%" width="240%" height="240%">
+              <feGaussianBlur stdDeviation="5" result="blur"/>
+              <feMerge>
+                <feMergeNode in="blur"/>
+                <feMergeNode in="SourceGraphic"/>
+              </feMerge>
+            </filter>
+            <path id="crWellPulsePath" d="M58,224 C84,224 94,224 112,224 L655,224"/>
+          </defs>
+          <rect width="720" height="444" fill="#f7f3ed"/>
+
+          <g>
+            <path class="cr-primary cr-connected" style="--delay:0.70s;--base:0.20;--peak:0.82;--after:0.38" d="M126,221 L119,205 L122,188 L113,169 L108,151 L98,132"/>
+            <path class="cr-secondary cr-connected" style="--delay:0.88s;--base:0.09;--peak:0.52;--after:0.18" d="M121,197 L104,187 L99,174 M115,175 L132,163 L137,146 M108,151 L91,143 M103,140 L113,124"/>
+
+            <path class="cr-primary cr-connected" style="--delay:1.05s;--base:0.19;--peak:0.80;--after:0.36" d="M158,227 L166,241 L163,258 L172,276 L174,296 L183,318"/>
+            <path class="cr-secondary" style="--delay:1.23s;--base:0.07;--peak:0.46;--after:0.10" d="M165,247 L148,258 M166,263 L184,272 L194,286 M174,291 L160,306 M179,306 L196,318"/>
+
+            <path class="cr-primary" style="--delay:1.42s;--base:0.15;--peak:0.70;--after:0.15" d="M191,221 L184,203 L187,186 L179,166 L180,149 L171,126"/>
+            <path class="cr-secondary" style="--delay:1.60s;--base:0.06;--peak:0.40;--after:0.07" d="M185,197 L204,184 M184,179 L168,169 L160,154 M179,159 L196,145 M174,136 L158,125"/>
+
+            <path class="cr-primary cr-connected" style="--delay:1.82s;--base:0.18;--peak:0.80;--after:0.37" d="M228,227 L235,246 L249,260 L247,279 L258,295 L264,317"/>
+            <path class="cr-secondary cr-connected" style="--delay:2.00s;--base:0.08;--peak:0.50;--after:0.16" d="M238,250 L218,263 L210,278 M248,264 L268,275 M250,286 L236,302 M260,305 L280,315"/>
+
+            <path class="cr-primary cr-connected" style="--delay:2.20s;--base:0.17;--peak:0.76;--after:0.34" d="M262,221 L256,205 L244,190 L247,172 L238,153 L234,135"/>
+            <path class="cr-secondary" style="--delay:2.38s;--base:0.06;--peak:0.42;--after:0.08" d="M251,198 L232,192 L220,178 M246,181 L263,168 M240,158 L220,146 M236,143 L247,127 L253,112"/>
+
+            <path class="cr-primary" style="--delay:2.60s;--base:0.14;--peak:0.68;--after:0.14" d="M299,227 L303,244 L315,261 L318,280 L327,296 L326,315"/>
+            <path class="cr-secondary" style="--delay:2.78s;--base:0.055;--peak:0.38;--after:0.065" d="M305,247 L290,260 M313,260 L333,255 M318,277 L338,290 L350,304 M326,299 L309,314"/>
+
+            <path class="cr-primary cr-connected" style="--delay:2.98s;--base:0.18;--peak:0.82;--after:0.36" d="M334,221 L329,199 L318,184 L320,163 L309,143 L306,121"/>
+            <path class="cr-secondary cr-connected" style="--delay:3.16s;--base:0.08;--peak:0.50;--after:0.15" d="M328,202 L348,190 L359,174 M321,186 L303,177 M318,166 L334,151 M311,148 L291,137 L281,121"/>
+
+            <path class="cr-primary cr-connected" style="--delay:3.38s;--base:0.17;--peak:0.78;--after:0.34" d="M371,227 L382,243 L385,260 L396,276 L394,294 L406,313"/>
+            <path class="cr-secondary" style="--delay:3.56s;--base:0.055;--peak:0.38;--after:0.065" d="M381,244 L363,255 M386,263 L405,254 M395,278 L416,291 M397,298 L382,316"/>
+
+            <path class="cr-primary" style="--delay:3.78s;--base:0.13;--peak:0.64;--after:0.13" d="M407,221 L402,204 L391,188 L392,166 L381,149 L377,130"/>
+            <path class="cr-secondary" style="--delay:3.96s;--base:0.05;--peak:0.34;--after:0.06" d="M400,204 L419,192 M394,191 L374,184 L365,171 M390,171 L407,156 M382,150 L362,139"/>
+
+            <path class="cr-primary cr-connected" style="--delay:4.18s;--base:0.17;--peak:0.78;--after:0.34" d="M444,227 L454,247 L454,265 L463,280 L472,299 L470,319"/>
+            <path class="cr-secondary cr-connected" style="--delay:4.36s;--base:0.075;--peak:0.48;--after:0.14" d="M453,248 L435,264 M454,267 L474,260 M462,282 L482,296 L493,311 M471,301 L456,316"/>
+
+            <path class="cr-primary" style="--delay:4.58s;--base:0.125;--peak:0.62;--after:0.125" d="M482,221 L474,201 L477,181 L467,164 L464,144 L455,124"/>
+            <path class="cr-secondary" style="--delay:4.76s;--base:0.05;--peak:0.32;--after:0.055" d="M476,200 L493,189 M475,184 L457,173 L448,159 M466,162 L485,147 M460,138 L440,128"/>
+
+            <path class="cr-primary cr-connected" style="--delay:4.98s;--base:0.16;--peak:0.76;--after:0.32" d="M520,227 L529,244 L542,258 L540,279 L548,296 L558,313"/>
+            <path class="cr-secondary" style="--delay:5.16s;--base:0.05;--peak:0.32;--after:0.055" d="M529,244 L512,258 M540,259 L560,251 M541,279 L522,292 M549,297 L568,309 L577,324"/>
+
+            <path class="cr-primary cr-connected" style="--delay:5.40s;--base:0.155;--peak:0.72;--after:0.30" d="M558,221 L552,202 L540,188 L543,166 L534,146 L530,126"/>
+            <path class="cr-secondary cr-connected" style="--delay:5.58s;--base:0.065;--peak:0.42;--after:0.12" d="M551,203 L570,190 M541,188 L522,179 M541,168 L559,154 L567,137 M535,148 L516,135"/>
+
+            <path class="cr-primary" style="--delay:5.82s;--base:0.115;--peak:0.58;--after:0.115" d="M596,227 L606,243 L604,260 L615,276 L626,294 L628,316"/>
+            <path class="cr-secondary" style="--delay:6.00s;--base:0.045;--peak:0.30;--after:0.05" d="M605,246 L586,260 M607,263 L625,254 M616,278 L636,291 M624,292 L610,309 M628,307 L646,321"/>
+
+            <path class="cr-primary cr-connected" style="--delay:6.22s;--base:0.15;--peak:0.70;--after:0.29" d="M632,221 L627,203 L630,186 L620,170 L616,151 L606,132"/>
+            <path class="cr-secondary" style="--delay:6.40s;--base:0.045;--peak:0.30;--after:0.05" d="M628,203 L646,192 M629,187 L611,177 M620,170 L637,154 M615,151 L596,141 M609,137 L620,120"/>
+          </g>
+
+          <use href="#crWellPulsePath" fill="none" stroke="#1a1a2a" stroke-width="6.5" stroke-linecap="round" opacity="0.16"/>
+          <use href="#crWellPulsePath" fill="none" stroke="#1a1a2a" stroke-width="2.2" stroke-linecap="round" opacity="0.34"/>
+          <path d="M58,224 C86,224 95,224 112,224" fill="none" stroke="#1d4ed8" stroke-width="8" stroke-linecap="round" opacity="0.12"/>
+          <path d="M112,224 L655,224" fill="none" stroke="#1d4ed8" stroke-width="2.8" stroke-linecap="round" opacity="0.48"/>
+          <circle class="cr-well-pulse" r="4.2"/>
+
+          <g>
+            <circle class="cr-perf" style="--delay:0.70s" cx="126" cy="221" r="4"/>
+            <circle class="cr-perf" style="--delay:1.05s" cx="158" cy="227" r="4"/>
+            <circle class="cr-perf" style="--delay:1.42s" cx="191" cy="221" r="4"/>
+            <circle class="cr-perf" style="--delay:1.82s" cx="228" cy="227" r="4"/>
+            <circle class="cr-perf" style="--delay:2.20s" cx="262" cy="221" r="4"/>
+            <circle class="cr-perf" style="--delay:2.60s" cx="299" cy="227" r="4"/>
+            <circle class="cr-perf" style="--delay:2.98s" cx="334" cy="221" r="4"/>
+            <circle class="cr-perf" style="--delay:3.38s" cx="371" cy="227" r="4"/>
+            <circle class="cr-perf" style="--delay:3.78s" cx="407" cy="221" r="4"/>
+            <circle class="cr-perf" style="--delay:4.18s" cx="444" cy="227" r="4"/>
+            <circle class="cr-perf" style="--delay:4.58s" cx="482" cy="221" r="4"/>
+            <circle class="cr-perf" style="--delay:4.98s" cx="520" cy="227" r="4"/>
+            <circle class="cr-perf" style="--delay:5.40s" cx="558" cy="221" r="4"/>
+            <circle class="cr-perf" style="--delay:5.82s" cx="596" cy="227" r="4"/>
+            <circle class="cr-perf" style="--delay:6.22s" cx="632" cy="221" r="4"/>
+          </g>
+        </svg>
+      </div>
+
+      <div class="current-copy-block">
+        <span class="placeholder-label">Text placeholder</span>
+        <div class="placeholder-copy"></div>
+      </div>
+    </div>
+
+    <div class="current-panel">
+      <div class="current-title-block">
+        <div class="current-num">Current Research 02</div>
+        <span class="placeholder-label">Title placeholder</span>
+        <div class="placeholder-title"></div>
+      </div>
+
+      <div class="current-figure asphaltene-figure">
+        <svg viewBox="0 0 760 320" xmlns="http://www.w3.org/2000/svg" aria-label="Asphaltene remediation in an interconnected pore network">
+          <rect width="760" height="320" fill="#f7f3ed"/>
+
+          <g>
+            <line class="well-shadow" x1="108" y1="42" x2="108" y2="278"/>
+            <line class="well-core" x1="108" y1="42" x2="108" y2="278"/>
+            <circle class="perf" cx="108" cy="76" r="3.8"/>
+            <circle class="perf" cx="108" cy="110" r="3.8"/>
+            <circle class="perf" cx="108" cy="145" r="3.8"/>
+            <circle class="perf" cx="108" cy="181" r="3.8"/>
+            <circle class="perf" cx="108" cy="216" r="3.8"/>
+            <circle class="perf" cx="108" cy="250" r="3.8"/>
+          </g>
+
+          <g>
+            <path class="pore-throat" d="M108,76 C130,72 144,70 162,74 C186,80 198,60 224,62 C250,64 264,88 292,84 C320,80 336,58 366,60 C398,62 416,88 450,86 C486,84 512,72 550,80 C582,86 606,92 640,88"/>
+            <path class="pore-throat" d="M108,110 C132,108 146,118 168,120 C196,123 210,144 240,140 C270,136 286,112 318,116 C350,120 366,148 402,148 C436,148 456,126 492,130 C526,134 548,154 584,150 C614,146 636,136 666,142"/>
+            <path class="pore-throat" d="M108,145 C134,150 148,164 174,166 C206,168 222,188 254,184 C286,180 304,154 338,160 C372,166 390,190 426,190 C462,190 482,170 518,176 C550,182 570,204 606,202 C638,200 662,188 696,194"/>
+            <path class="pore-throat" d="M108,181 C132,186 148,204 174,208 C206,213 224,230 258,224 C292,218 310,198 346,204 C382,210 400,236 438,236 C474,236 496,216 532,222 C566,228 588,246 624,242 C650,239 666,232 688,236"/>
+            <path class="pore-throat" d="M108,216 C132,226 148,246 178,248 C210,250 230,260 264,252 C298,244 318,226 354,234 C390,242 412,260 452,260 C490,260 514,248 552,254 C578,258 600,262 628,258"/>
+
+            <path class="pore-link" d="M162,74 C162,92 164,106 168,120"/>
+            <path class="pore-link" d="M224,62 C228,92 232,116 240,140"/>
+            <path class="pore-link" d="M292,84 C298,98 306,110 318,116"/>
+            <path class="pore-link" d="M366,60 C370,94 382,124 402,148"/>
+            <path class="pore-link" d="M450,86 C458,104 472,120 492,130"/>
+            <path class="pore-link" d="M550,80 C556,110 568,132 584,150"/>
+            <path class="pore-link" d="M168,120 C168,140 170,154 174,166"/>
+            <path class="pore-link" d="M240,140 C242,160 248,174 254,184"/>
+            <path class="pore-link" d="M318,116 C322,138 330,152 338,160"/>
+            <path class="pore-link" d="M402,148 C406,166 416,180 426,190"/>
+            <path class="pore-link" d="M492,130 C500,150 510,166 518,176"/>
+            <path class="pore-link" d="M584,150 C590,170 598,190 606,202"/>
+            <path class="pore-link" d="M174,166 C172,182 172,196 174,208"/>
+            <path class="pore-link" d="M254,184 C252,200 254,214 258,224"/>
+            <path class="pore-link" d="M338,160 C338,178 342,194 346,204"/>
+            <path class="pore-link" d="M426,190 C426,210 432,226 438,236"/>
+            <path class="pore-link" d="M518,176 C520,196 526,212 532,222"/>
+            <path class="pore-link" d="M606,202 C612,218 618,232 624,242"/>
+            <path class="pore-link" d="M174,208 C172,226 174,240 178,248"/>
+            <path class="pore-link" d="M258,224 C256,236 258,246 264,252"/>
+            <path class="pore-link" d="M346,204 C344,218 348,228 354,234"/>
+            <path class="pore-link" d="M438,236 C440,248 444,256 452,260"/>
+            <path class="pore-link" d="M532,222 C536,238 544,248 552,254"/>
+          </g>
+
+          <g>
+            <path class="flow-stream entering" d="M640,88 C606,92 582,86 550,80 C512,72 486,84 450,86 C416,88 398,62 366,60 C336,58 320,80 292,84 C264,88 250,64 224,62 C198,60 186,80 162,74 C144,70 130,72 108,76">
+              <animate attributeName="stroke-dashoffset" from="0" to="-36" dur="1.6s" repeatCount="indefinite"/>
+              <animate attributeName="opacity" values="0.7;0.7;0;0;0.7" keyTimes="0;0.66;0.72;0.98;1" dur="10s" repeatCount="indefinite"/>
+            </path>
+            <path class="flow-stream" d="M666,142 C636,136 614,146 584,150 C548,154 526,134 492,130 C456,126 436,148 402,148">
+              <animate attributeName="stroke-dashoffset" from="0" to="-36" dur="1.6s" repeatCount="indefinite"/>
+              <animate attributeName="opacity" values="0.62;0.62;0.62;0.62;0" keyTimes="0;0.66;0.72;0.98;1" dur="10s" repeatCount="indefinite"/>
+            </path>
+            <path class="flow-stream" d="M696,194 C662,188 638,200 606,202 C570,204 550,182 518,176">
+              <animate attributeName="stroke-dashoffset" from="0" to="-36" dur="1.6s" repeatCount="indefinite"/>
+              <animate attributeName="opacity" values="0.62;0.62;0.62;0.62;0" keyTimes="0;0.66;0.72;0.98;1" dur="10s" repeatCount="indefinite"/>
+            </path>
+            <path class="flow-stream" d="M688,236 C666,232 650,239 624,242 C588,246 566,228 532,222 C496,216 474,236 438,236">
+              <animate attributeName="stroke-dashoffset" from="0" to="-36" dur="1.6s" repeatCount="indefinite"/>
+              <animate attributeName="opacity" values="0.62;0.62;0.62;0.62;0" keyTimes="0;0.66;0.72;0.98;1" dur="10s" repeatCount="indefinite"/>
+            </path>
+            <path class="flow-stream" d="M628,258 C600,262 578,258 552,254">
+              <animate attributeName="stroke-dashoffset" from="0" to="-36" dur="1.6s" repeatCount="indefinite"/>
+              <animate attributeName="opacity" values="0.62;0.62;0.62;0.62;0" keyTimes="0;0.66;0.72;0.98;1" dur="10s" repeatCount="indefinite"/>
+            </path>
+          </g>
+
+          <g>
+            <path class="remediation-stream" d="M108,110 C132,108 146,118 168,120 C196,123 210,144 240,140 C270,136 286,112 318,116 C350,120 366,148 402,148">
+              <animate attributeName="stroke-dashoffset" from="0" to="-48" dur="1.6s" repeatCount="indefinite"/>
+              <animate attributeName="opacity" values="0;0;0.72;0.72;0;0" keyTimes="0;0.24;0.32;0.66;0.72;1" dur="10s" repeatCount="indefinite"/>
+            </path>
+            <path class="remediation-stream" d="M108,145 C134,150 148,164 174,166 C206,168 222,188 254,184 C286,180 304,154 338,160 C372,166 390,190 426,190 C462,190 482,170 518,176">
+              <animate attributeName="stroke-dashoffset" from="0" to="-48" dur="1.6s" repeatCount="indefinite"/>
+              <animate attributeName="opacity" values="0;0;0.72;0.72;0;0" keyTimes="0;0.24;0.32;0.66;0.72;1" dur="10s" repeatCount="indefinite"/>
+            </path>
+            <path class="remediation-stream" d="M108,181 C132,186 148,204 174,208 C206,213 224,230 258,224 C292,218 310,198 346,204 C382,210 400,236 438,236">
+              <animate attributeName="stroke-dashoffset" from="0" to="-48" dur="1.6s" repeatCount="indefinite"/>
+              <animate attributeName="opacity" values="0;0;0.72;0.72;0;0" keyTimes="0;0.24;0.32;0.66;0.72;1" dur="10s" repeatCount="indefinite"/>
+            </path>
+            <path class="remediation-stream" d="M108,216 C132,226 148,246 178,248 C210,250 230,260 264,252 C298,244 318,226 354,234 C390,242 412,260 452,260 C490,260 514,248 552,254">
+              <animate attributeName="stroke-dashoffset" from="0" to="-48" dur="1.6s" repeatCount="indefinite"/>
+              <animate attributeName="opacity" values="0;0;0.72;0.72;0;0" keyTimes="0;0.24;0.32;0.66;0.72;1" dur="10s" repeatCount="indefinite"/>
+            </path>
+          </g>
+
+          <g>
+            <path class="flow-stream entering restored-flow" d="M640,88 C606,92 582,86 550,80 C512,72 486,84 450,86 C416,88 398,62 366,60 C336,58 320,80 292,84 C264,88 250,64 224,62 C198,60 186,80 162,74 C144,70 130,72 108,76">
+              <animate attributeName="stroke-dashoffset" from="0" to="-36" dur="1.6s" repeatCount="indefinite"/>
+              <animate attributeName="opacity" values="0;0;0.7;0.7;0" keyTimes="0;0.66;0.72;0.98;1" dur="10s" repeatCount="indefinite"/>
+            </path>
+            <path class="flow-stream restored-flow" d="M402,148 C366,148 350,120 318,116 C286,112 270,136 240,140 C210,144 196,123 168,120 C146,118 132,108 108,110">
+              <animate attributeName="stroke-dashoffset" from="0" to="-36" dur="1.6s" repeatCount="indefinite"/>
+              <animate attributeName="opacity" values="0;0;0.62;0.62;0" keyTimes="0;0.68;0.72;0.98;1" dur="10s" repeatCount="indefinite"/>
+            </path>
+            <path class="flow-stream restored-flow" d="M518,176 C482,170 462,190 426,190 C390,190 372,166 338,160 C304,154 286,180 254,184 C222,188 206,168 174,166 C148,164 134,150 108,145">
+              <animate attributeName="stroke-dashoffset" from="0" to="-36" dur="1.6s" repeatCount="indefinite"/>
+              <animate attributeName="opacity" values="0;0;0.62;0.62;0" keyTimes="0;0.68;0.72;0.98;1" dur="10s" repeatCount="indefinite"/>
+            </path>
+            <path class="flow-stream restored-flow" d="M438,236 C400,236 382,210 346,204 C310,198 292,218 258,224 C224,230 206,213 174,208 C148,204 132,186 108,181">
+              <animate attributeName="stroke-dashoffset" from="0" to="-36" dur="1.6s" repeatCount="indefinite"/>
+              <animate attributeName="opacity" values="0;0;0.62;0.62;0" keyTimes="0;0.68;0.72;0.98;1" dur="10s" repeatCount="indefinite"/>
+            </path>
+            <path class="flow-stream restored-flow" d="M552,254 C514,248 490,260 452,260 C412,260 390,242 354,234 C318,226 298,244 264,252 C230,260 210,250 178,248 C148,246 132,226 108,216">
+              <animate attributeName="stroke-dashoffset" from="0" to="-36" dur="1.6s" repeatCount="indefinite"/>
+              <animate attributeName="opacity" values="0;0;0.62;0.62;0" keyTimes="0;0.68;0.72;0.98;1" dur="10s" repeatCount="indefinite"/>
+            </path>
+          </g>
+
+          <g>
+            <circle class="pore-body" cx="162" cy="74" r="7.5"/>
+            <circle class="pore-body" cx="224" cy="62" r="8.5"/>
+            <circle class="pore-body" cx="292" cy="84" r="6.5"/>
+            <circle class="pore-body" cx="366" cy="60" r="7.5"/>
+            <circle class="pore-body" cx="450" cy="86" r="6.5"/>
+            <circle class="pore-body" cx="550" cy="80" r="7.5"/>
+            <circle class="pore-body" cx="640" cy="88" r="7"/>
+            <circle class="pore-body" cx="168" cy="120" r="8"/>
+            <circle class="pore-body" cx="240" cy="140" r="9"/>
+            <circle class="pore-body" cx="318" cy="116" r="7"/>
+            <circle class="pore-body blocked" cx="402" cy="148" r="8.5">
+              <animate attributeName="fill" values="#8f8a82;#8f8a82;#f7f3ed;#f7f3ed;#8f8a82" keyTimes="0;0.56;0.70;0.98;1" dur="10s" repeatCount="indefinite"/>
+              <animate attributeName="stroke" values="#777168;#777168;#aaa397;#aaa397;#777168" keyTimes="0;0.56;0.70;0.98;1" dur="10s" repeatCount="indefinite"/>
+            </circle>
+            <circle class="pore-body" cx="492" cy="130" r="7.5"/>
+            <circle class="pore-body" cx="584" cy="150" r="8"/>
+            <circle class="pore-body" cx="666" cy="142" r="7.5"/>
+            <circle class="pore-body" cx="174" cy="166" r="7.5"/>
+            <circle class="pore-body" cx="254" cy="184" r="8.5"/>
+            <circle class="pore-body" cx="338" cy="160" r="8"/>
+            <circle class="pore-body" cx="426" cy="190" r="7.5"/>
+            <circle class="pore-body blocked" cx="518" cy="176" r="8">
+              <animate attributeName="fill" values="#8f8a82;#8f8a82;#f7f3ed;#f7f3ed;#8f8a82" keyTimes="0;0.56;0.70;0.98;1" dur="10s" repeatCount="indefinite"/>
+              <animate attributeName="stroke" values="#777168;#777168;#aaa397;#aaa397;#777168" keyTimes="0;0.56;0.70;0.98;1" dur="10s" repeatCount="indefinite"/>
+            </circle>
+            <circle class="pore-body" cx="606" cy="202" r="7.5"/>
+            <circle class="pore-body" cx="696" cy="194" r="7"/>
+            <circle class="pore-body" cx="174" cy="208" r="8"/>
+            <circle class="pore-body" cx="258" cy="224" r="7.5"/>
+            <circle class="pore-body" cx="346" cy="204" r="8.5"/>
+            <circle class="pore-body blocked" cx="438" cy="236" r="8">
+              <animate attributeName="fill" values="#8f8a82;#8f8a82;#f7f3ed;#f7f3ed;#8f8a82" keyTimes="0;0.56;0.70;0.98;1" dur="10s" repeatCount="indefinite"/>
+              <animate attributeName="stroke" values="#777168;#777168;#aaa397;#aaa397;#777168" keyTimes="0;0.56;0.70;0.98;1" dur="10s" repeatCount="indefinite"/>
+            </circle>
+            <circle class="pore-body" cx="532" cy="222" r="7.5"/>
+            <circle class="pore-body" cx="624" cy="242" r="7.5"/>
+            <circle class="pore-body" cx="688" cy="236" r="6.5"/>
+            <circle class="pore-body" cx="178" cy="248" r="7"/>
+            <circle class="pore-body" cx="264" cy="252" r="8"/>
+            <circle class="pore-body" cx="354" cy="234" r="7.5"/>
+            <circle class="pore-body" cx="452" cy="260" r="8"/>
+            <circle class="pore-body blocked" cx="552" cy="254" r="7.5">
+              <animate attributeName="fill" values="#8f8a82;#8f8a82;#f7f3ed;#f7f3ed;#8f8a82" keyTimes="0;0.56;0.70;0.98;1" dur="10s" repeatCount="indefinite"/>
+              <animate attributeName="stroke" values="#777168;#777168;#aaa397;#aaa397;#777168" keyTimes="0;0.56;0.70;0.98;1" dur="10s" repeatCount="indefinite"/>
+            </circle>
+            <circle class="pore-body" cx="628" cy="258" r="7"/>
+          </g>
+        </svg>
+      </div>
+
+      <div class="figure-legend" aria-label="Figure legend">
+        <span class="legend-item">
+          <svg class="legend-swatch" viewBox="0 0 28 14" aria-hidden="true"><circle cx="14" cy="7" r="5" fill="#f7f3ed" stroke="#aaa397" stroke-width="1.4" opacity="0.58"/></svg>
+          Open pore
+        </span>
+        <span class="legend-item">
+          <svg class="legend-swatch" viewBox="0 0 28 14" aria-hidden="true"><circle cx="14" cy="7" r="5" fill="#8f8a82" stroke="#777168" stroke-width="1.4" opacity="0.68"/></svg>
+          Asphaltene block
+        </span>
+        <span class="legend-item">
+          <svg class="legend-swatch" viewBox="0 0 28 14" aria-hidden="true"><line x1="3" y1="7" x2="25" y2="7" stroke="#1d4ed8" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="1 6"/></svg>
+          Production flow
+        </span>
+        <span class="legend-item">
+          <svg class="legend-swatch" viewBox="0 0 28 14" aria-hidden="true"><line x1="3" y1="7" x2="25" y2="7" stroke="#b45309" stroke-width="3" stroke-linecap="round" stroke-dasharray="2 6"/></svg>
+          Remediation fluid
+        </span>
+        <span class="legend-item">
+          <svg class="legend-swatch" viewBox="0 0 28 14" aria-hidden="true"><line x1="14" y1="2" x2="14" y2="12" stroke="#1a1a2a" stroke-width="5" stroke-linecap="round" opacity="0.28"/></svg>
+          Wellbore
+        </span>
+      </div>
+
+      <div class="current-copy-block">
+        <span class="placeholder-label">Text placeholder</span>
+        <div class="placeholder-copy"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── PREVIOUS RESEARCH ── -->
+  <section class="section">
+    <div class="section-label">Previous Research</div>
 
     <!-- Theme 1: Steering Motion — converging stream lines, dark bg -->
     <div class="theme-panel">
@@ -272,41 +676,53 @@
       </div>
     </div>
 
-    <!-- Theme 2: Collective States — simple coherent flock/vortex -->
+    <!-- Theme 2: Collective States — chiral flock -->
     <div class="theme-panel flip">
-      <div class="theme-illo is-subtle is-collective">
+      <div class="theme-illo">
         <svg viewBox="0 0 440 300" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
           <rect width="440" height="300" fill="#fbfaf7"/>
 
           <defs>
-            <path id="flock-triangle" d="M13,0 L-2,7 L2,0 L-2,-7 Z"/>
+            <path id="notched-heading" d="M8,0 L-6,-5 L-2,0 L-6,5 Z"/>
           </defs>
 
-          <g transform="translate(276 150)">
-            <g>
-              <animateTransform attributeName="transform" type="rotate" from="0 0 0" to="360 0 0" dur="52s" repeatCount="indefinite"/>
-              <circle cx="0" cy="0" r="92" fill="none" stroke="#1d4ed8" stroke-width="1" opacity="0.06"/>
-              <circle cx="0" cy="0" r="58" fill="none" stroke="#1d4ed8" stroke-width="1" opacity="0.09"/>
-              <g fill="#1a1a2a" opacity="0.42">
-                <use href="#flock-triangle" transform="translate(86 -8) rotate(98) scale(1.08)"/>
-                <use href="#flock-triangle" transform="translate(56 46) rotate(142) scale(0.92)"/>
-                <use href="#flock-triangle" transform="translate(13 76) rotate(172) scale(1.02)"/>
-                <use href="#flock-triangle" transform="translate(-42 54) rotate(218) scale(0.86)"/>
-                <use href="#flock-triangle" transform="translate(-74 17) rotate(260) scale(1.04)"/>
-                <use href="#flock-triangle" transform="translate(-58 -37) rotate(302) scale(0.90)"/>
-                <use href="#flock-triangle" transform="translate(-14 -72) rotate(338) scale(1.00)"/>
-                <use href="#flock-triangle" transform="translate(37 -62) rotate(28) scale(0.84)"/>
-                <use href="#flock-triangle" transform="translate(75 -27) rotate(64) scale(1.10)"/>
-              </g>
-              <g fill="#1d4ed8" opacity="0.34">
-                <use href="#flock-triangle" transform="translate(43 8) rotate(112) scale(0.76)"/>
-                <use href="#flock-triangle" transform="translate(10 39) rotate(166) scale(0.70)"/>
-                <use href="#flock-triangle" transform="translate(-31 22) rotate(236) scale(0.82)"/>
-                <use href="#flock-triangle" transform="translate(-30 -23) rotate(296) scale(0.68)"/>
-                <use href="#flock-triangle" transform="translate(10 -46) rotate(4) scale(0.80)"/>
-                <use href="#flock-triangle" transform="translate(49 -16) rotate(58) scale(0.72)"/>
-              </g>
-            </g>
+          <circle cx="264" cy="148" r="80" fill="none" stroke="#1d4ed8" stroke-width="0.7" opacity="0.05"/>
+
+          <g opacity="0.92">
+            <animateTransform attributeName="transform" type="rotate"
+              from="0 264 148" to="360 264 148"
+              dur="48s" repeatCount="indefinite"/>
+
+            <use href="#notched-heading" transform="translate(264 119) rotate(0) scale(1.05)" fill="#1d4ed8" opacity="0.38"/>
+            <use href="#notched-heading" transform="translate(286 127) rotate(46) scale(1.00)" fill="#1d4ed8" opacity="0.36"/>
+            <use href="#notched-heading" transform="translate(298 148) rotate(90) scale(1.08)" fill="#1d4ed8" opacity="0.40"/>
+            <use href="#notched-heading" transform="translate(288 171) rotate(134) scale(1.00)" fill="#1d4ed8" opacity="0.36"/>
+            <use href="#notched-heading" transform="translate(263 179) rotate(182) scale(1.06)" fill="#1d4ed8" opacity="0.38"/>
+            <use href="#notched-heading" transform="translate(239 166) rotate(234) scale(1.00)" fill="#1d4ed8" opacity="0.34"/>
+            <use href="#notched-heading" transform="translate(232 140) rotate(284) scale(1.02)" fill="#1d4ed8" opacity="0.36"/>
+            <use href="#notched-heading" transform="translate(247 122) rotate(327) scale(0.96)" fill="#1d4ed8" opacity="0.32"/>
+
+            <use href="#notched-heading" transform="translate(273 96) rotate(10) scale(0.88)" fill="#1d4ed8" opacity="0.24"/>
+            <use href="#notched-heading" transform="translate(309 110) rotate(50) scale(0.88)" fill="#1d4ed8" opacity="0.25"/>
+            <use href="#notched-heading" transform="translate(332 142) rotate(85) scale(0.92)" fill="#1d4ed8" opacity="0.28"/>
+            <use href="#notched-heading" transform="translate(325 181) rotate(118) scale(0.88)" fill="#1d4ed8" opacity="0.25"/>
+            <use href="#notched-heading" transform="translate(294 210) rotate(154) scale(0.86)" fill="#1d4ed8" opacity="0.22"/>
+            <use href="#notched-heading" transform="translate(248 211) rotate(194) scale(0.88)" fill="#1d4ed8" opacity="0.23"/>
+            <use href="#notched-heading" transform="translate(211 184) rotate(236) scale(0.86)" fill="#1d4ed8" opacity="0.22"/>
+            <use href="#notched-heading" transform="translate(196 145) rotate(273) scale(0.90)" fill="#1d4ed8" opacity="0.24"/>
+            <use href="#notched-heading" transform="translate(211 107) rotate(308) scale(0.86)" fill="#1d4ed8" opacity="0.22"/>
+            <use href="#notched-heading" transform="translate(236 86) rotate(336) scale(0.84)" fill="#1d4ed8" opacity="0.20"/>
+
+            <use href="#notched-heading" transform="translate(344 112) rotate(66) scale(0.70)" fill="#1d4ed8" opacity="0.14"/>
+            <use href="#notched-heading" transform="translate(364 156) rotate(95) scale(0.72)" fill="#1d4ed8" opacity="0.16"/>
+            <use href="#notched-heading" transform="translate(343 205) rotate(126) scale(0.70)" fill="#1d4ed8" opacity="0.14"/>
+            <use href="#notched-heading" transform="translate(299 239) rotate(159) scale(0.66)" fill="#1d4ed8" opacity="0.12"/>
+            <use href="#notched-heading" transform="translate(235 234) rotate(199) scale(0.68)" fill="#1d4ed8" opacity="0.13"/>
+            <use href="#notched-heading" transform="translate(183 197) rotate(239) scale(0.68)" fill="#1d4ed8" opacity="0.13"/>
+            <use href="#notched-heading" transform="translate(167 139) rotate(275) scale(0.70)" fill="#1d4ed8" opacity="0.14"/>
+            <use href="#notched-heading" transform="translate(196 82) rotate(314) scale(0.66)" fill="#1d4ed8" opacity="0.12"/>
+            <use href="#notched-heading" transform="translate(254 58) rotate(354) scale(0.66)" fill="#1d4ed8" opacity="0.12"/>
+            <use href="#notched-heading" transform="translate(317 72) rotate(35) scale(0.68)" fill="#1d4ed8" opacity="0.13"/>
           </g>
         </svg>
       </div>
@@ -356,7 +772,7 @@
         <div class="tl-date">2025 –</div>
       </div>
       <div class="tl-row">
-        <div class="tl-org">Nat'l High Magnetic Field Lab / FAMU-FSU</div>
+        <div class="tl-org">National High Magnetic Field Laboratory</div>
         <div class="tl-role">Postdoctoral Researcher</div>
         <div class="tl-date">2022 – 2025</div>
       </div>
@@ -405,28 +821,24 @@
     <div class="section-label">Skills</div>
     <div class="skill-groups">
       <div class="skill-group">
-        <span class="skill-group-name">Fabrication</span>
-        <div class="skill-tags">
-          <span class="skill-tag">2PP Lithography</span><span class="skill-tag">Direct Laser Writing</span><span class="skill-tag">Photolithography</span><span class="skill-tag">Soft Lithography</span><span class="skill-tag">E-beam Deposition</span><span class="skill-tag">Sputter Deposition</span><span class="skill-tag">Microfluidics</span><span class="skill-tag">Colloidal Synthesis</span>
-        </div>
+        <h3 class="skill-group-name">Experimental Platforms &amp; Instrumentation</h3>
+        <p class="skill-desc">Custom optical, microfluidic, electrical, and magnetic measurement systems for controlled soft-matter and transport experiments.</p>
+        <div class="skill-methods">Microscopy platforms · Optical tweezers · Microfluidics · LabVIEW · Environmental control</div>
       </div>
       <div class="skill-group">
-        <span class="skill-group-name">Microscopy</span>
-        <div class="skill-tags">
-          <span class="skill-tag">Confocal</span><span class="skill-tag">Polarization</span><span class="skill-tag">SEM</span><span class="skill-tag">Optical Tweezers</span>
-        </div>
+        <h3 class="skill-group-name">Controlled Soft-Matter Experiments</h3>
+        <p class="skill-desc">Preparation, actuation, and perturbation of colloidal, interfacial, biological, and complex-fluid systems under controlled conditions.</p>
+        <div class="skill-methods">Colloidal synthesis · Active particles · Liquid-crystal cells · Interfaces · Biofilm assays</div>
       </div>
       <div class="skill-group">
-        <span class="skill-group-name">Programming</span>
-        <div class="skill-tags">
-          <span class="skill-tag">Python</span><span class="skill-tag">MATLAB</span><span class="skill-tag">OpenCV</span><span class="skill-tag">PyTorch</span><span class="skill-tag">OpenPIV</span><span class="skill-tag">NumPy / SciPy</span><span class="skill-tag">pandas</span><span class="skill-tag">matplotlib</span>
-        </div>
+        <h3 class="skill-group-name">Microstructured Systems &amp; Materials Engineering</h3>
+        <p class="skill-desc">Design and fabrication of structured boundaries, microdevices, colloidal materials, and experimental geometries that encode physical constraints.</p>
+        <div class="skill-methods">2PP lithography · Direct laser writing · Soft lithography · Thin-film deposition · KLayout / AutoCAD</div>
       </div>
       <div class="skill-group">
-        <span class="skill-group-name">Design</span>
-        <div class="skill-tags">
-          <span class="skill-tag">KLayout</span><span class="skill-tag">AutoCAD</span><span class="skill-tag">Blender</span><span class="skill-tag">LabVIEW</span>
-        </div>
+        <h3 class="skill-group-name">Imaging, Quantification &amp; Data-Driven Analysis</h3>
+        <p class="skill-desc">Image-based measurement pipelines for microscopy, particle tracking, flow-field extraction, segmentation, and statistical analysis.</p>
+        <div class="skill-methods">Python · MATLAB · OpenCV · PyTorch · OpenPIV · NumPy / SciPy</div>
       </div>
     </div>
   </section>
@@ -455,6 +867,159 @@
 </div>
 
 <script>
+function runWhenVisible(target, callback, options = {}) {
+  if (!target) return;
+
+  if (!('IntersectionObserver' in window)) {
+    callback();
+    return;
+  }
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (!entry.isIntersecting) return;
+      observer.unobserve(entry.target);
+      callback();
+    });
+  }, {
+    threshold: options.threshold ?? 0.22,
+    rootMargin: options.rootMargin ?? '0px 0px -8% 0px'
+  });
+
+  observer.observe(target);
+}
+
+// Keep SVG SMIL animations parked until their figure scrolls into view.
+(function () {
+  const animatedSvgs = [...document.querySelectorAll('svg')]
+    .filter((svg) => svg.querySelector('animate, animateMotion, animateTransform'));
+
+  animatedSvgs.forEach((svg) => {
+    try {
+      svg.pauseAnimations();
+      svg.setCurrentTime(0);
+    } catch (_) {
+      return;
+    }
+
+    runWhenVisible(svg, () => {
+      try {
+        svg.setCurrentTime(0);
+        svg.unpauseAnimations();
+      } catch (_) {}
+    });
+  });
+})();
+
+// Synchronized current-research rejuvenation loop.
+(function () {
+  const loopMs = 8200;
+  const restMs = 220;
+  const resetMs = 5700;
+  const activationLagMs = 90;
+  const secondaryLagMs = 150;
+  const dormantStroke = '#b8b2a8';
+  const activeStroke = '#1d4ed8';
+  const dormantFill = '#a8a29e';
+  const pulse = document.querySelector('.cr-well-pulse');
+  const panel = pulse ? pulse.closest('.current-panel') : null;
+  const pulsePath = document.getElementById('crWellPulsePath');
+  const pulsePathLength = pulsePath ? pulsePath.getTotalLength() : 0;
+  const pulseTravelMs = resetMs - restMs;
+
+  function delayForX(x) {
+    if (!pulsePath || !pulsePathLength) return restMs;
+
+    let bestLength = 0;
+    let bestDistance = Infinity;
+    for (let i = 0; i <= 240; i++) {
+      const length = (i / 240) * pulsePathLength;
+      const point = pulsePath.getPointAtLength(length);
+      const distance = Math.abs(point.x - x);
+      if (distance < bestDistance) {
+        bestDistance = distance;
+        bestLength = length;
+      }
+    }
+
+    return restMs + (bestLength / pulsePathLength) * pulseTravelMs;
+  }
+
+  const perfs = [...document.querySelectorAll('.cr-perf')].map((el) => ({
+    el,
+    delay: delayForX(parseFloat(el.getAttribute('cx'))) + activationLagMs
+  }));
+
+  const fractures = [...document.querySelectorAll('.cr-primary, .cr-secondary')].map((el, index) => ({
+    el,
+    delay: (perfs[Math.floor(index / 2)]?.delay || restMs) + (el.classList.contains('cr-secondary') ? secondaryLagMs : 0),
+    base: parseFloat(el.style.getPropertyValue('--base')),
+    active: el.classList.contains('cr-secondary') ? 0.55 : 0.78
+  }));
+
+  function resetCurrentResearch() {
+    fractures.forEach(({ el, base }) => {
+      el.style.opacity = base;
+      el.style.stroke = dormantStroke;
+    });
+
+    perfs.forEach(({ el }) => {
+      el.style.opacity = 0.42;
+      el.style.fill = dormantFill;
+    });
+
+    if (pulse) pulse.style.opacity = 0;
+  }
+
+  let loopStart = null;
+  function drawCurrentResearch(time) {
+    if (loopStart === null) loopStart = time;
+    const t = (time - loopStart) % loopMs;
+    const dormant = t < restMs;
+
+    fractures.forEach(({ el, delay, base, active }) => {
+      if (dormant || t < delay) {
+        el.style.opacity = base;
+        el.style.stroke = dormantStroke;
+        return;
+      }
+
+      el.style.stroke = activeStroke;
+      el.style.opacity = active;
+    });
+
+    perfs.forEach(({ el, delay }) => {
+      if (dormant || t < delay) {
+        el.style.opacity = 0.42;
+        el.style.fill = dormantFill;
+        return;
+      }
+
+      el.style.fill = activeStroke;
+      el.style.opacity = 0.82;
+    });
+
+    if (pulse && pulsePath) {
+      if (dormant) {
+        pulse.style.opacity = 0;
+      } else {
+        const progress = Math.max(0, Math.min(1, (t - restMs) / (resetMs - restMs)));
+        const point = pulsePath.getPointAtLength(progress * pulsePathLength);
+        pulse.style.opacity = 0.78;
+        pulse.setAttribute('transform', `translate(${point.x.toFixed(1)} ${point.y.toFixed(1)})`);
+      }
+    }
+
+    requestAnimationFrame(drawCurrentResearch);
+  }
+
+  resetCurrentResearch();
+  runWhenVisible(panel || pulse, () => {
+    loopStart = null;
+    requestAnimationFrame(drawCurrentResearch);
+  });
+})();
+
 // Generate an animated nematic director field.
 (function () {
   const svg = document.getElementById('wave-svg');
@@ -493,8 +1058,11 @@
     }
   }
 
+  let startTime = null;
   function draw(time) {
-    const t = time * 0.00046;
+    if (startTime === null) startTime = time;
+    const elapsed = time - startTime;
+    const t = elapsed * 0.00046;
 
     directors.forEach(({ line, x, y, baseAngle, phase, drift }) => {
       const angle = baseAngle
@@ -512,7 +1080,10 @@
     requestAnimationFrame(draw);
   }
 
-  requestAnimationFrame(draw);
+  runWhenVisible(svg, () => {
+    startTime = null;
+    requestAnimationFrame(draw);
+  });
 })();
 </script>
 </body>

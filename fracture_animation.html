@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fracture Rejuvenation Animation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:       #14120f;
+  --bg-elev:  #1c1a16;
+  --fg:       #e8e3d8;
+  --fg-muted: #8a857b;
+  --fg-dim:   #56524b;
+  --accent:   #b85a2b;
+  --line:     #2a2824;
+  --line-s:   #3a3731;
+  --serif:    'Instrument Serif', Georgia, serif;
+  --mono:     'JetBrains Mono', 'Fira Code', monospace;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--mono);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 56px 24px;
+}
+.wrap { width: 100%; max-width: 980px; }
+.canvas-frame {
+  border: 1px solid var(--line-s);
+  background: var(--bg-elev);
+  overflow: hidden;
+  position: relative;
+}
+canvas { display: block; width: 100%; height: 520px; cursor: pointer; }
+.controls {
+  display: grid; grid-template-columns: auto 1fr auto;
+  gap: 14px; align-items: center;
+  padding: 14px 20px; border-top: 1px solid var(--line);
+}
+.ctrl-lbl {
+  font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--fg-dim); white-space: nowrap;
+}
+input[type=range] {
+  -webkit-appearance: none; appearance: none;
+  width: 100%; height: 1px; background: var(--line-s); outline: none; cursor: pointer;
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 13px; height: 13px;
+  background: var(--accent); border-radius: 0; cursor: pointer;
+}
+input[type=range]::-moz-range-thumb {
+  width: 13px; height: 13px; background: var(--accent);
+  border: none; border-radius: 0; cursor: pointer;
+}
+.legend {
+  display: flex; flex-wrap: wrap; gap: 14px 28px;
+  margin-top: 18px; font-size: 10px; letter-spacing: 0.10em;
+  text-transform: uppercase; color: var(--fg-muted);
+}
+.leg { display: flex; align-items: center; gap: 9px; }
+.caption {
+  margin-top: 11px; display: flex; justify-content: space-between;
+  font-size: 10px; letter-spacing: 0.06em; color: var(--fg-dim);
+}
+@media (max-width: 600px) {
+  canvas { height: 360px; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="canvas-frame">
+    <canvas id="fc" aria-label="Animated fracture rejuvenation in a producing horizontal well"></canvas>
+    <div class="controls">
+      <span class="ctrl-lbl">T₀ — Depleted</span>
+      <input type="range" id="scrub" min="0" max="1" step="0.001" value="0">
+      <span class="ctrl-lbl">T₁ — Rejuvenated</span>
+    </div>
+  </div>
+
+  <div class="legend">
+    <div class="leg">
+      <svg width="28" height="10" viewBox="0 0 28 10" style="flex:0 0 28px">
+        <line x1="2" y1="5" x2="26" y2="5" stroke="#3a3731" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      Dormant fracture
+    </div>
+    <div class="leg">
+      <svg width="28" height="10" viewBox="0 0 28 10" style="flex:0 0 28px">
+        <line x1="2" y1="5" x2="26" y2="5" stroke="#b85a2b" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      Rejuvenated fracture
+    </div>
+    <div class="leg">
+      <svg width="28" height="10" viewBox="0 0 28 10" style="flex:0 0 28px">
+        <circle cx="5" cy="5" r="1.8" fill="#b85a2b" opacity="0.9"/>
+        <circle cx="14" cy="5" r="1.8" fill="#b85a2b" opacity="0.55"/>
+        <circle cx="23" cy="5" r="1.8" fill="#b85a2b" opacity="0.22"/>
+      </svg>
+      Fracture fluid / tracer
+    </div>
+    <div class="leg">
+      <svg width="28" height="10" viewBox="0 0 28 10" style="flex:0 0 28px">
+        <circle cx="14" cy="5" r="4" fill="none" stroke="#b85a2b" stroke-width="1.2"/>
+        <circle cx="14" cy="5" r="1.5" fill="#e8e3d8"/>
+      </svg>
+      Treatment front
+    </div>
+  </div>
+
+  <div class="caption">
+    <span>FIG. 01 — Schematic animation of fracture rejuvenation and tracer propagation in a horizontal well.</span>
+    <span>CLICK TO REPLAY ↻</span>
+  </div>
+
+</div>
+<script>
+(function () {
+'use strict';
+const canvas = document.getElementById('fc');
+const ctx    = canvas.getContext('2d');
+const scrub  = document.getElementById('scrub');
+
+/* ── Palette ── */
+const P = { bg:'#1c1a16', line:'#2a2824', fdim:'#56524b', fmut:'#8a857b', fg:'#e8e3d8', acc:'#b85a2b' };
+function cc(hex, a) {
+  const n = parseInt(hex.replace('#',''), 16);
+  return `rgba(${n>>16},${(n>>8)&255},${n&255},${a.toFixed(3)})`;
+}
+
+/* ── Seeded RNG ── */
+let _s = 42;
+function sr(s) { _s = (s >>> 0) || 1; }
+function rn() { _s ^= _s<<13; _s ^= _s>>>17; _s ^= _s<<5; return (_s>>>0)/4294967296; }
+
+/* ── State ── */
+let W, H, dpr;
+let NC = 8;
+let clusters = [], fracs = [], props = [], ptcls = [];
+let natFracs = [];      // pre-existing natural fracture fabric
+let seismic  = [];      // microseismic flash events
+let rejuv = 0;
+let animStart = null, autoPlay = false;
+const FILL = 11000, HOLD = 3500, CYCLE = FILL + HOLD;
+
+/* ── Build geometry ── */
+function build() {
+  NC = 8; sr(42);
+  clusters = []; fracs = []; props = []; ptcls = [];
+
+  const wellY = H * 0.60;
+  const x0 = W * 0.06, x1 = W * 0.94;
+
+  for (let ci = 0; ci < NC; ci++) {
+    const cx = x0 + (x1 - x0) * ((ci + 0.5) / NC);
+
+    // Per-cluster stress tilt — both wings share this azimuth so they form
+    // one coherent plane (perpendicular to wellbore in plan view).
+    const tilt = (rn() - 0.5) * 0.10;
+
+    // ── Main bi-wing fracture (depth 0) ──
+    const upLen   = 120 + rn() * 140;
+    const frontT = Math.max(0, Math.min(1, (cx - (x0 + 44)) / (x1 - x0 - 44)));
+
+    const upFrac  = mkFrac(cx, wellY, -Math.PI / 2 + tilt, upLen,  0, false, ci, frontT);
+    fracs.push(upFrac);
+    addBranches(upFrac, 1, ci, frontT);               // secondaries + tertiaries off up-wing
+
+    const downLen  = 72 + rn() * 88;
+    const downFrac = mkFrac(cx, wellY,  Math.PI / 2 + tilt, downLen, 0, false, ci, frontT);
+    fracs.push(downFrac);
+    addBranches(downFrac, 1, ci, frontT);             // secondaries + tertiaries off down-wing
+
+    // ── Near-wellbore complexity (~40%) ──
+    // Short diverging strand from the wellbore: multiple perfs initiate and
+    // compete before coalescing into the dominant plane a short distance out.
+    if (rn() < 0.40) {
+      const side = rn() < 0.5 ? -1 : 1;
+      const cLen = 28 + rn() * 44;
+      const cf = mkFrac(cx, wellY,
+        -Math.PI / 2 + tilt + side * (0.20 + rn() * 0.18),
+        cLen, 1, false, ci, frontT);
+      fracs.push(cf);
+      if (rn() < 0.50) addBranches(cf, 2, ci, frontT);   // occasional sub-branch
+    }
+
+    // ── Stranded segment (~28%) ──
+    // Isolated fracture floating away from the wellbore — prior stimulation
+    // fracture that lost near-wellbore connectivity (proppant washout / creep
+    // closure). Gap from wellbore = closed section.
+    if (rn() < 0.28) {
+      const ss  = rn() < 0.5 ? -1 : 1;
+      const gap = 26 + rn() * 38;
+      fracs.push(mkFrac(
+        cx + (rn() - 0.5) * 8,
+        wellY + ss * gap,
+        -Math.PI / 2 + tilt + (rn() - 0.5) * 0.16,
+        44 + rn() * 78, 1, true, ci, frontT));
+    }
+
+    clusters.push({ x: cx, y: wellY, ci, frontT });
+  }
+
+  // Proppant dots along every non-stranded fracture
+  fracs.forEach(f => {
+    if (f.strand) return;
+    const steps = Math.max(3, Math.floor(f.len / 14));
+    for (let i = 1; i < steps; i++) {
+      const pt = pon(f, i / steps);
+      props.push({ x: pt.x, y: pt.y, r: 0.55 + rn() * 0.95, seed: rn(), f });
+    }
+  });
+}
+
+// Recursive secondary / tertiary fracture branches.
+// Branches root at random points along the parent, deviate at moderate angles
+// (representing natural fracture reactivation and tip splitting), and thin out
+// with each generation.
+function addBranches(parent, depth, ci, frontT) {
+  if (depth > 2) return;
+  // 2-3 secondaries off each main wing; 0-1 tertiaries off each secondary
+  const n = depth === 1
+    ? 2 + Math.floor(rn() * 2)
+    : (rn() < 0.52 ? 1 : 0);
+
+  for (let i = 0; i < n; i++) {
+    const t   = 0.12 + rn() * 0.76;                // position along parent
+    const idx = Math.floor(parent.pts.length * t);
+    const p   = parent.pts[idx];
+    const q   = parent.pts[Math.min(idx + 1, parent.pts.length - 1)];
+    const ba  = Math.atan2(q.y - p.y, q.x - p.x);
+    const s   = rn() < 0.5 ? -1 : 1;
+    const dev = (depth === 1 ? 0.36 : 0.28) + rn() * 0.44;
+    const bLen = parent.len * (0.18 + rn() * 0.32) * (depth === 1 ? 1 : 0.62);
+    const b   = mkFrac(p.x, p.y, ba + s * dev, bLen, depth, false, ci, frontT);
+    fracs.push(b);
+    addBranches(b, depth + 1, ci, frontT);
+  }
+}
+
+// Build a fracture polyline with natural tortuosity.
+// Activation timing is baked in: deeper fractures open later, producing a
+// cascade where the main plane opens first, then the secondary network grows.
+function mkFrac(x, y, ang, len, depth, strand, ci, frontT) {
+  const segs = Math.max(4, Math.floor(len / 10));
+  const pts  = [{ x, y }];
+  let cx = x, cy = y, a = ang;
+  for (let i = 0; i < segs; i++) {
+    a += (rn() - 0.5) * 0.21;
+    const s = len / segs;
+    cx += Math.cos(a) * s; cy += Math.sin(a) * s;
+    pts.push({ x: cx, y: cy });
+  }
+  const d   = Math.min(depth, 2);
+  const baseDelay  = [0.00, 0.06, 0.15][d];
+  const jitter     = rn() * [0.04, 0.08, 0.10][d];
+  const dur        = [0.10, 0.16, 0.22][d];
+  const rStart     = Math.min(0.995, frontT + baseDelay + jitter);
+  return { pts, len, depth, strand, ci, rStart, dur };
+}
+
+function pon(f, t) {
+  const idx = t * (f.pts.length - 1);
+  const i = Math.floor(idx), fr = idx - i;
+  const a = f.pts[i], b = f.pts[Math.min(i + 1, f.pts.length - 1)];
+  return { x: a.x + (b.x - a.x) * fr, y: a.y + (b.y - a.y) * fr };
+}
+
+function gw(f) {   // fracture growth [0..1]
+  if (f.strand) return 0;
+  return Math.max(0, Math.min(1, (rejuv - f.rStart) / f.dur));
+}
+
+/* ── Resize ── */
+function resize() {
+  const r = canvas.getBoundingClientRect();
+  dpr = Math.min(window.devicePixelRatio || 1, 2);
+  W = r.width; H = r.height;
+  canvas.width = W * dpr; canvas.height = H * dpr;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  build();
+}
+
+/* ── Polyline helper ── */
+function pl(pts, g) {
+  if (pts.length < 2) return;
+  ctx.beginPath(); ctx.moveTo(pts[0].x, pts[0].y);
+  const last = Math.max(1, Math.floor((pts.length - 1) * g));
+  for (let i = 1; i <= last; i++) ctx.lineTo(pts[i].x, pts[i].y);
+  if (g < 1 && last < pts.length - 1) {
+    const fr = (pts.length - 1) * g - last;
+    const a = pts[last], b = pts[last + 1];
+    ctx.lineTo(a.x + (b.x - a.x) * fr, a.y + (b.y - a.y) * fr);
+  }
+  ctx.stroke();
+}
+
+/* ── Draw passes ── */
+function drawStrata() {
+  ctx.setLineDash([]);
+  for (let i = 0; i < 9; i++) {
+    const y = H * i / 9;
+    ctx.strokeStyle = cc(P.line, 0.72);
+    ctx.lineWidth = 0.5;
+    ctx.beginPath(); ctx.moveTo(0, y + (i % 2) * 2.5);
+    for (let x = 0; x <= W; x += 48)
+      ctx.lineTo(x, y + Math.sin(x * 0.011 + i * 1.2) * 3.5 + (i % 2) * 2.5);
+    ctx.stroke();
+  }
+}
+
+function drawFracsBase() {
+  ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  const opD  = [0.50, 0.34, 0.20];
+  const lwD  = [1.05, 0.65, 0.42];
+  fracs.forEach(f => {
+    const d = Math.min(f.depth, 2);
+    if (f.strand) {
+      ctx.setLineDash([3, 5]);
+      ctx.strokeStyle = cc(P.fdim, 0.34);
+      ctx.lineWidth = 0.55;
+    } else {
+      ctx.setLineDash([]);
+      ctx.strokeStyle = cc(P.fdim, opD[d]);
+      ctx.lineWidth = lwD[d];
+    }
+    pl(f.pts, 1);
+  });
+  ctx.setLineDash([]);
+}
+
+function drawFracsActive() {
+  ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.setLineDash([]);
+  const glowW  = [8,    5,    3   ];
+  const glowOp = [0.13, 0.09, 0.06];
+  const coreW  = [1.7,  1.05, 0.68];
+  const coreOp = [0.84, 0.65, 0.44];
+  fracs.forEach(f => {
+    const g = gw(f);
+    if (g <= 0) return;
+    const d = Math.min(f.depth, 2);
+    ctx.strokeStyle = cc(P.acc, glowOp[d] * g);
+    ctx.lineWidth = glowW[d];
+    pl(f.pts, g);
+    ctx.strokeStyle = cc(P.acc, coreOp[d] * g);
+    ctx.lineWidth = coreW[d];
+    pl(f.pts, g);
+  });
+}
+
+function drawProps(t) {
+  props.forEach(p => {
+    const g = gw(p.f);
+    if (g <= 0) {
+      ctx.fillStyle = cc(P.fdim, 0.28);
+    } else {
+      const pulse = 0.82 + 0.18 * Math.sin(t * 2.8 + p.seed * 11);
+      ctx.fillStyle = cc(P.acc, 0.56 * g * pulse + 0.07);
+    }
+    ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fill();
+  });
+}
+
+function drawParticles() {
+  if (rejuv < 0.06) return;
+  if (Math.random() < 0.44 && ptcls.length < 100) {
+    const pool = fracs.filter(f => !f.strand && f.depth === 0 && gw(f) > 0.6);
+    if (pool.length) {
+      const f = pool[Math.floor(Math.random() * pool.length)];
+      ptcls.push({ f, t: 0, spd: 0.005 + Math.random() * 0.005, a: 1 });
+    }
+  }
+  ptcls.forEach(p => {
+    const g = gw(p.f);
+    p.t += p.spd;
+    if (p.t > g) p.a -= 0.06;
+    const pt = pon(p.f, Math.min(p.t, 0.999));
+    const alpha = p.a * Math.min(1, p.t * 9) * (g > 0.5 ? 1 : g * 2);
+    ctx.fillStyle = cc(P.fmut, Math.max(0, alpha * 0.38));
+    ctx.beginPath(); ctx.arc(pt.x, pt.y, 1.5, 0, Math.PI * 2); ctx.fill();
+  });
+  ptcls = ptcls.filter(p => p.a > 0 && p.t < 1);
+}
+
+function drawWellbore(x0, x1, wellY) {
+  ctx.setLineDash([]); ctx.lineCap = 'round';
+  // casing shadow
+  ctx.strokeStyle = cc(P.fdim, 0.32);
+  ctx.lineWidth = 8;
+  ctx.beginPath();
+  ctx.moveTo(x0, wellY);
+  ctx.bezierCurveTo(x0+18, wellY, x0+28, wellY-18, x0+44, wellY);
+  ctx.lineTo(x1, wellY);
+  ctx.stroke();
+  // main bore
+  ctx.strokeStyle = cc(P.fmut, 0.70);
+  ctx.lineWidth = 2.2;
+  ctx.beginPath();
+  ctx.moveTo(x0, wellY);
+  ctx.bezierCurveTo(x0+18, wellY, x0+28, wellY-18, x0+44, wellY);
+  ctx.lineTo(x1, wellY);
+  ctx.stroke();
+  // casing marks
+  ctx.strokeStyle = cc(P.fmut, 0.22);
+  ctx.lineWidth = 0.7;
+  for (let x = x0 + 46; x < x1; x += 20) {
+    ctx.beginPath(); ctx.moveTo(x, wellY - 3.5); ctx.lineTo(x, wellY + 3.5); ctx.stroke();
+  }
+}
+
+function drawPerfs(wellY) {
+  clusters.forEach(cl => {
+    const prog = Math.max(0, Math.min(1, (rejuv - cl.frontT) / 0.07));
+    if (prog > 0) {
+      // burst halo on activation
+      const burstProg = Math.max(0, Math.min(1, (rejuv - cl.frontT) / 0.04));
+      if (burstProg < 1) {
+        const r = 24 * burstProg;
+        const grd = ctx.createRadialGradient(cl.x, wellY, 0, cl.x, wellY, r);
+        grd.addColorStop(0, cc(P.acc, 0.45 * (1 - burstProg)));
+        grd.addColorStop(1, cc(P.acc, 0));
+        ctx.fillStyle = grd;
+        ctx.beginPath(); ctx.arc(cl.x, wellY, r, 0, Math.PI * 2); ctx.fill();
+      }
+      // steady halo
+      const grd2 = ctx.createRadialGradient(cl.x, wellY, 0, cl.x, wellY, 13 * prog);
+      grd2.addColorStop(0, cc(P.acc, 0.30 * prog));
+      grd2.addColorStop(1, cc(P.acc, 0));
+      ctx.fillStyle = grd2;
+      ctx.beginPath(); ctx.arc(cl.x, wellY, 13 * prog, 0, Math.PI * 2); ctx.fill();
+      // dot
+      ctx.fillStyle = cc(P.acc, 0.90 * prog);
+      ctx.beginPath(); ctx.arc(cl.x, wellY, 3.8, 0, Math.PI * 2); ctx.fill();
+    } else {
+      ctx.fillStyle = cc(P.fdim, 0.50);
+      ctx.beginPath(); ctx.arc(cl.x, wellY, 2.6, 0, Math.PI * 2); ctx.fill();
+    }
+  });
+}
+
+function drawPulse(x0, x1, wellY) {
+  if (rejuv < 0.01 || rejuv > 0.97) return;
+  const px = x0 + 44 + (x1 - x0 - 44) * rejuv;
+  // outer glow
+  const grd = ctx.createRadialGradient(px, wellY, 0, px, wellY, 30);
+  grd.addColorStop(0, cc(P.acc, 0.22));
+  grd.addColorStop(0.45, cc(P.acc, 0.07));
+  grd.addColorStop(1, cc(P.acc, 0));
+  ctx.fillStyle = grd;
+  ctx.beginPath(); ctx.arc(px, wellY, 30, 0, Math.PI * 2); ctx.fill();
+  // ring
+  ctx.strokeStyle = cc(P.acc, 0.58); ctx.lineWidth = 1.2; ctx.setLineDash([]);
+  ctx.beginPath(); ctx.arc(px, wellY, 9, 0, Math.PI * 2); ctx.stroke();
+  // core
+  ctx.fillStyle = cc(P.fg, 0.92);
+  ctx.beginPath(); ctx.arc(px, wellY, 4, 0, Math.PI * 2); ctx.fill();
+}
+
+function drawAnnotations(x0, x1, wellY) {
+  const active = clusters.filter(cl => rejuv >= cl.frontT).length;
+  const state  = rejuv < 0.02 ? 'DEPLETED' : rejuv > 0.95 ? 'REJUVENATED' : 'REPRESSURIZING';
+
+  ctx.font = '10px "JetBrains Mono", monospace';
+  ctx.setLineDash([]);
+
+  // top-right
+  ctx.textAlign = 'right'; ctx.fillStyle = cc(P.fmut, 0.72);
+  ctx.fillStyle = rejuv > 0.5 ? cc(P.acc, 0.92) : cc(P.fmut, 0.72);
+  ctx.fillText('STATE  ◆  ' + state, W - 14, 18);
+  ctx.fillStyle = cc(P.fmut, 0.72);
+  ctx.fillText(`CLUSTERS  ◆  ${String(active).padStart(2,'0')} / 08`, W - 14, 32);
+
+  // heel / toe
+  ctx.textAlign = 'left'; ctx.fillStyle = cc(P.fdim, 0.60);
+  ctx.fillText('HEEL', x0 + 4, wellY + 22);
+  ctx.textAlign = 'right';
+  ctx.fillText('TOE', x1 - 4, wellY + 22);
+
+  // scale bar
+  const s0 = W * 0.41, s1 = W * 0.59, sy = H - 18;
+  ctx.strokeStyle = cc(P.fdim, 0.48); ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(s0, sy); ctx.lineTo(s1, sy);
+  ctx.moveTo(s0, sy-3); ctx.lineTo(s0, sy+3);
+  ctx.moveTo(s1, sy-3); ctx.lineTo(s1, sy+3);
+  ctx.stroke();
+  ctx.textAlign = 'center'; ctx.fillStyle = cc(P.fdim, 0.48);
+  ctx.fillText('500 FT', (s0+s1)/2, sy - 6);
+
+  if (rejuv > 0.97) {
+    ctx.fillStyle = cc(P.fmut, 0.38);
+    ctx.fillText('CLICK TO REPLAY  ↻', W/2, H - 38);
+  }
+}
+
+/* ── Main loop ── */
+function draw(now) {
+  requestAnimationFrame(draw);
+
+  if (autoPlay) {
+    if (animStart === null) animStart = now;
+    const el = now - animStart;
+    if (el >= CYCLE) { animStart = now; ptcls = []; }
+    rejuv = el < FILL ? el / FILL : 1;
+    scrub.value = rejuv;
+  }
+
+  const t = now / 1000;
+  const wellY = H * 0.60;
+  const x0 = W * 0.06, x1 = W * 0.94;
+
+  ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = P.bg; ctx.fillRect(0, 0, W, H);
+
+  drawStrata();
+  drawFracsBase();
+  drawFracsActive();
+  drawProps(t);
+  drawParticles();
+  drawWellbore(x0, x1, wellY);
+  drawPerfs(wellY);
+  drawPulse(x0, x1, wellY);
+  drawAnnotations(x0, x1, wellY);
+}
+
+/* ── Events ── */
+function start() {
+  autoPlay = true; animStart = null; rejuv = 0; ptcls = [];
+}
+
+resize();
+window.addEventListener('resize', resize);
+
+const io = new IntersectionObserver(entries => {
+  if (entries[0].isIntersecting) { start(); io.disconnect(); }
+}, { threshold: 0.25 });
+io.observe(canvas);
+
+canvas.addEventListener('click', start);
+
+scrub.addEventListener('mousedown', () => { autoPlay = false; });
+scrub.addEventListener('touchstart', () => { autoPlay = false; }, { passive: true });
+scrub.addEventListener('input', e => { rejuv = parseFloat(e.target.value); });
+
+requestAnimationFrame(draw);
+})();
+</script>
+</body>
+</html>

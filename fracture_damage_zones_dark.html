@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fracture Damage Zones Dark</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap');
+
+    :root {
+      --bg: #14120f;
+      --bg-elev: #1c1a16;
+      --fg: #e8e3d8;
+      --fg-muted: #8a857b;
+      --fg-dim: #56524b;
+      --line: #2a2824;
+      --line-s: #3a3731;
+      --rock: #4c4740;
+      --prop-fill: #d8d0c2;
+      --prop-stroke: #a49a8b;
+      --interface: #4a8292;
+      --pack-damage: #f0c030;
+      --serif: 'Instrument Serif', Georgia, serif;
+      --mono: 'JetBrains Mono', 'Fira Code', monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--fg);
+      min-height: 100vh;
+      padding: 56px 24px 72px;
+      font-family: var(--mono);
+    }
+
+    .wrap {
+      max-width: 980px;
+      margin: 0 auto;
+    }
+
+    .eyebrow {
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--fg-dim);
+      margin-bottom: 12px;
+    }
+
+    h1 {
+      font-family: var(--serif);
+      font-size: clamp(3rem, 6vw, 4.8rem);
+      line-height: 0.95;
+      font-weight: 400;
+      margin-bottom: 30px;
+      color: var(--fg);
+    }
+
+    .figure-wrap {
+      border-top: 1px solid var(--line-s);
+      border-bottom: 1px solid var(--line);
+      background: var(--bg-elev);
+      padding: 24px 0 18px;
+    }
+
+    svg {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .caption {
+      margin-top: 14px;
+      color: var(--fg-dim);
+      font-size: 10px;
+      letter-spacing: 0.06em;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="eyebrow">Current Research Concept</div>
+    <h1>Fracture Damage Zones</h1>
+
+    <div class="figure-wrap">
+      <svg viewBox="0 0 980 540" aria-label="Dark themed schematic of fracture-matrix interface damage and proppant-pack damage">
+        <g transform="translate(0 78)">
+          <path id="rock-top" fill="#4c4740" opacity="0.9"></path>
+          <path id="rock-bottom" fill="#4c4740" opacity="0.9"></path>
+          <g id="interface-top"></g>
+          <g id="interface-bottom"></g>
+        </g>
+        <g id="pack-damage" transform="translate(0 78)"></g>
+        <g id="proppant-pack" transform="translate(0 78)" fill="#d8d0c2" stroke="none"></g>
+        <g id="proppant-tint" transform="translate(0 78)"></g>
+        <g id="annotations" fill="#e8e3d8">
+          <rect x="86" y="58" width="34" height="14" fill="#4a8292"></rect>
+          <text x="134" y="72" font-family="'Instrument Serif', Georgia, serif" font-size="21">Fracture-matrix interface damage zone</text>
+          <text x="134" y="96" fill="#8a857b" font-family="'Instrument Serif', Georgia, serif" font-size="17">Near-wall permeability-reducing skin</text>
+          <text x="134" y="118" fill="#8a857b" font-family="'Instrument Serif', Georgia, serif" font-size="17">(polymer cake, fines, scale deposition)</text>
+
+          <rect x="528" y="58" width="34" height="14" fill="#f0c030"></rect>
+          <text x="576" y="72" font-family="'Instrument Serif', Georgia, serif" font-size="21">Proppant-pack damage zone</text>
+          <text x="576" y="96" fill="#8a857b" font-family="'Instrument Serif', Georgia, serif" font-size="17">Compaction and internal</text>
+          <text x="576" y="118" fill="#8a857b" font-family="'Instrument Serif', Georgia, serif" font-size="17">permeability loss</text>
+
+          <rect x="280" y="520" width="28" height="12" fill="#4c4740"></rect>
+          <text x="320" y="531" fill="#8a857b" font-family="'Instrument Serif', Georgia, serif" font-size="18">Formation matrix</text>
+          <circle cx="510" cy="526" r="7" fill="#d8d0c2"></circle>
+          <text x="528" y="531" fill="#8a857b" font-family="'Instrument Serif', Georgia, serif" font-size="18">Proppant grains</text>
+        </g>
+      </svg>
+    </div>
+
+    <div class="caption">FIG. 01 — Dark-theme schematic study matched to the visual language of the fracture animation concept.</div>
+  </div>
+
+  <script>
+    (function () {
+      const svgNS = 'http://www.w3.org/2000/svg';
+      const pack = document.getElementById('proppant-pack');
+      const rockTop = document.getElementById('rock-top');
+      const rockBottom = document.getElementById('rock-bottom');
+      const interfaceTop = document.getElementById('interface-top');
+      const interfaceBottom = document.getElementById('interface-bottom');
+      const packDamage = document.getElementById('pack-damage');
+      const proppantTint = document.getElementById('proppant-tint');
+      if (!pack || !rockTop || !rockBottom || !interfaceTop || !interfaceBottom || !packDamage || !proppantTint) return;
+
+      const xLeft = 86;
+      const xRight = 904;
+      const centerY = 255;
+      const halfBand = 35;
+      const wallClearance = 4.5;
+      const rockThickness = 108;
+      const interfaceBand = 5;
+
+      function centerline(x) {
+        return centerY + 11 * Math.sin((x - 120) * 0.0105) - 7 * Math.sin((x + 30) * 0.021);
+      }
+
+      function randJitter(i, j, scale) {
+        const v = Math.sin(i * 12.9898 + j * 78.233) * 43758.5453;
+        return (v - Math.floor(v) - 0.5) * 2 * scale;
+      }
+
+      function addCircle(cx, cy, r) {
+        const circle = document.createElementNS(svgNS, 'circle');
+        circle.setAttribute('cx', cx.toFixed(1));
+        circle.setAttribute('cy', cy.toFixed(1));
+        circle.setAttribute('r', r.toFixed(1));
+        pack.appendChild(circle);
+        return circle;
+      }
+
+      function clearGroup(node) {
+        while (node.firstChild) node.removeChild(node.firstChild);
+      }
+
+      function buildPack() {
+        const particles = [];
+        const baseRadius = 4.9;
+        const radiusSpread = 0.22;
+        const minGap = 0.08;
+
+        function randUnit(i, j) {
+          const v = Math.sin(i * 91.7 + j * 163.11 + 0.37) * 43758.5453;
+          return v - Math.floor(v);
+        }
+
+        function makeInitialPacking() {
+          const stepX = 2 * baseRadius + 0.9;
+          const stepY = Math.sqrt(3) * baseRadius + 0.55;
+          const rows = Math.floor((2 * halfBand) / stepY) + 2;
+
+          for (let row = 0; row < rows; row++) {
+            const rowBase = centerY + (row - (rows - 1) / 2) * stepY;
+            const rowOffset = (row % 2) * (baseRadius + 0.45);
+            for (let col = 0, xBase = xLeft + 10 + rowOffset; xBase <= xRight - 10; col += 1, xBase += stepX) {
+              const x = xBase + randJitter(row, col, 0.65);
+              const c = centerline(x);
+              const y = rowBase + (c - centerY) + randJitter(col, row, 0.65);
+              const targetR = baseRadius + (randUnit(row + 10, col + 20) - 0.5) * 2 * radiusSpread;
+              if (Math.abs(y - c) > halfBand - targetR - 0.2) continue;
+              particles.push({ x, y, r: targetR * 0.72, targetR });
+            }
+          }
+        }
+
+        function confineParticle(p) {
+          if (p.x < xLeft + p.r) p.x = xLeft + p.r;
+          if (p.x > xRight - p.r) p.x = xRight - p.r;
+          const c = centerline(p.x);
+          const minY = c - halfBand + p.r;
+          const maxY = c + halfBand - p.r;
+          if (p.y < minY) p.y = minY;
+          if (p.y > maxY) p.y = maxY;
+        }
+
+        function relaxSystem(iterations) {
+          for (let iter = 0; iter < iterations; iter++) {
+            let moved = 0;
+            for (let i = 0; i < particles.length; i++) {
+              const a = particles[i];
+              for (let j = i + 1; j < particles.length; j++) {
+                const b = particles[j];
+                const dx = b.x - a.x;
+                const dy = b.y - a.y;
+                const distSq = dx * dx + dy * dy;
+                const minDist = a.r + b.r + minGap;
+                if (distSq === 0 || distSq >= minDist * minDist) continue;
+                const dist = Math.sqrt(distSq) || 0.0001;
+                const overlap = (minDist - dist) * 0.52;
+                const ux = dx / dist;
+                const uy = dy / dist;
+                a.x -= ux * overlap;
+                a.y -= uy * overlap;
+                b.x += ux * overlap;
+                b.y += uy * overlap;
+                confineParticle(a);
+                confineParticle(b);
+                moved += overlap;
+              }
+            }
+            for (let i = 0; i < particles.length; i++) confineParticle(particles[i]);
+            if (moved < 0.02) return true;
+          }
+          return false;
+        }
+
+        function swellContractMinimize() {
+          let step = 0.27;
+          let stall = 0;
+          while (step > 0.024 && stall < 12) {
+            const snapshot = particles.map((p) => ({ x: p.x, y: p.y, r: p.r }));
+            for (let i = 0; i < particles.length; i++) {
+              const p = particles[i];
+              const target = p.targetR * 0.9;
+              p.r = Math.min(target, p.r + step);
+              confineParticle(p);
+            }
+            const success = relaxSystem(20);
+            const allNearTarget = particles.every((p) => (p.targetR * 0.9) - p.r < 0.02);
+            if (!success) {
+              for (let i = 0; i < particles.length; i++) {
+                particles[i].x = snapshot[i].x;
+                particles[i].y = snapshot[i].y;
+                particles[i].r = snapshot[i].r;
+              }
+              step *= 0.56;
+              stall += 1;
+              continue;
+            }
+            if (allNearTarget) stall += 1;
+            else stall = 0;
+          }
+        }
+
+        makeInitialPacking();
+        relaxSystem(14);
+        swellContractMinimize();
+        relaxSystem(36);
+
+        particles.sort((a, b) => b.r - a.r);
+        particles.forEach((p) => { p.node = addCircle(p.x, p.y, p.r); });
+        return particles;
+      }
+
+      function buildRocks(particles) {
+        const xs = [];
+        for (let x = xLeft; x <= xRight; x += 8) xs.push(x);
+
+        function topEnvelope(x) {
+          let y = centerline(x) - halfBand;
+          for (let i = 0; i < particles.length; i++) {
+            const p = particles[i];
+            const dx = Math.abs(x - p.x);
+            if (dx > p.r) continue;
+            const local = p.y - Math.sqrt((p.r * p.r) - (dx * dx));
+            if (local < y) y = local;
+          }
+          return y - wallClearance;
+        }
+
+        function bottomEnvelope(x) {
+          let y = centerline(x) + halfBand;
+          for (let i = 0; i < particles.length; i++) {
+            const p = particles[i];
+            const dx = Math.abs(x - p.x);
+            if (dx > p.r) continue;
+            const local = p.y + Math.sqrt((p.r * p.r) - (dx * dx));
+            if (local > y) y = local;
+          }
+          return y + wallClearance;
+        }
+
+        function toPolyline(points, move) {
+          return points.map((p, i) => `${i === 0 ? move : 'L'} ${p[0].toFixed(1)} ${p[1].toFixed(1)}`).join(' ');
+        }
+
+        function addDamagePatch(group, outerPts, innerPts, color, opacity) {
+          const path = document.createElementNS(svgNS, 'path');
+          path.setAttribute('d', `${toPolyline(outerPts, 'M')} ${toPolyline(innerPts.slice().reverse(), 'L')} Z`);
+          path.setAttribute('fill', color);
+          path.setAttribute('opacity', opacity.toFixed(2));
+          group.appendChild(path);
+        }
+
+        const topInner = xs.map((x) => [x, topEnvelope(x)]);
+        const bottomInner = xs.map((x) => [x, bottomEnvelope(x)]);
+        const topDamageInner = topInner.map((p) => [p[0], p[1] + interfaceBand]);
+        const bottomDamageInner = bottomInner.map((p) => [p[0], p[1] - interfaceBand]);
+        const topOuter = xs.slice().reverse().map((x, i) => [x, topInner[topInner.length - 1 - i][1] - rockThickness]);
+        const bottomOuter = xs.slice().reverse().map((x, i) => [x, bottomInner[bottomInner.length - 1 - i][1] + rockThickness]);
+
+        rockTop.setAttribute('d', `${toPolyline(topOuter, 'M')} ${toPolyline(topInner, 'L')} Z`);
+        rockBottom.setAttribute('d', `${toPolyline(bottomInner, 'M')} ${toPolyline(bottomOuter, 'L')} Z`);
+
+        clearGroup(interfaceTop);
+        clearGroup(interfaceBottom);
+
+        // Continuous skin layer coating the fracture wall — variable thickness
+        // represents permeability-reducing deposit (polymer cake, fines, scale).
+        // Outer edge = exact rock surface; inner edge = irregular deposit face.
+        function skinThick(x) {
+          return 4.8
+            + 3.0 * Math.sin(x * 0.030 + 1.4)
+            + 1.6 * Math.sin(x * 0.067 + 2.9)
+            + 0.8 * Math.sin(x * 0.122 + 0.6);
+        }
+        function skinJitter(i, offset) {
+          const v = Math.sin((i + offset) * 53.1 + 19.3) * 43758.5453;
+          return (v - Math.floor(v) - 0.5) * 2.8;
+        }
+
+        const topSkinInner    = topInner.map((p, i)    => [p[0], p[1] + skinThick(p[0]) + skinJitter(i, 0)]);
+        const bottomSkinInner = bottomInner.map((p, i) => [p[0], p[1] - skinThick(p[0]) - skinJitter(i, 200)]);
+
+        addDamagePatch(interfaceTop,    topInner,       topSkinInner,    '#4a8292', 0.80);
+        addDamagePatch(interfaceBottom, bottomSkinInner, bottomInner,    '#4a8292', 0.80);
+      }
+
+      function buildPackDamage(particles) {
+        clearGroup(packDamage);
+
+        // Seeded pseudo-random: deterministic so rebuild gives the same blobs
+        function sr(seed) {
+          const v = Math.sin(seed * 127.1 + 311.7) * 43758.5453;
+          return v - Math.floor(v);
+        }
+
+        // Each zone: a cluster of randomly sized/placed overlapping ellipses
+        // drawn BEHIND the particles so amber reads only in interstitial gaps
+        const zones = [
+          { cx: 490, spread: 110, ryMax: halfBand * 0.88, count: 16, baseOpacity: 0.88 }, // main
+          { cx: 210, spread:  72, ryMax: halfBand * 0.82, count:  9, baseOpacity: 0.72 }, // secondary
+          { cx: 790, spread:  90, ryMax: halfBand * 0.84, count: 12, baseOpacity: 0.78 }, // secondary
+        ];
+
+        zones.forEach((zone, zi) => {
+          for (let i = 0; i < zone.count; i++) {
+            const s = zi * 200 + i;
+            const angle = sr(s) * Math.PI * 2;
+            const dist  = Math.pow(sr(s + 50), 0.6);
+            const bx = zone.cx + dist * zone.spread * 0.9 * Math.cos(angle);
+            const rawY = centerline(bx) + (sr(s + 100) - 0.5) * 2 * zone.ryMax * 0.6;
+            const cl   = centerline(bx);
+            const by   = Math.max(cl - zone.ryMax * 0.85, Math.min(cl + zone.ryMax * 0.85, rawY));
+            const rx   = (0.25 + sr(s + 10) * 0.75) * zone.spread * 0.55;
+            const ry   = (0.30 + sr(s + 20) * 0.70) * zone.ryMax * 0.70;
+            const op   = zone.baseOpacity * (0.65 + sr(s + 30) * 0.35);
+
+            const el = document.createElementNS(svgNS, 'ellipse');
+            el.setAttribute('cx', bx.toFixed(1));
+            el.setAttribute('cy', by.toFixed(1));
+            el.setAttribute('rx', rx.toFixed(1));
+            el.setAttribute('ry', ry.toFixed(1));
+            el.setAttribute('fill', '#f0c030');
+            el.setAttribute('opacity', op.toFixed(2));
+            packDamage.appendChild(el);
+          }
+        });
+
+        // Particle tint: amber overlay on grains inside each zone so the
+        // damage reads even where gaps are narrow.
+        clearGroup(proppantTint);
+        zones.forEach((zone, zi) => {
+          const tintOpacity = zi === 0 ? 0.28 : 0.18;
+          particles.forEach(p => {
+            if (Math.abs(p.x - zone.cx) > zone.spread) return;
+            const cl = centerline(p.x);
+            if (Math.abs(p.y - cl) > halfBand) return;
+            const nx = (p.x - zone.cx) / zone.spread;
+            const ny = (p.y - cl) / halfBand;
+            const falloff = Math.max(0, 1 - Math.sqrt(nx * nx + ny * ny));
+            const circle = document.createElementNS(svgNS, 'circle');
+            circle.setAttribute('cx', p.x.toFixed(1));
+            circle.setAttribute('cy', p.y.toFixed(1));
+            circle.setAttribute('r',  p.r.toFixed(1));
+            circle.setAttribute('fill', '#f0c030');
+            circle.setAttribute('opacity', (tintOpacity * falloff).toFixed(3));
+            proppantTint.appendChild(circle);
+          });
+        });
+      }
+
+      const particles = buildPack();
+      buildPackDamage(particles);
+      buildRocks(particles);
+    }());
+  </script>
+</body>
+</html>

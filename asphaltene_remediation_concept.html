@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Asphaltene Damage — Pore-Scale Physics</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Fira+Code:wght@300;400&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;1,8..60,300&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --cream:   #f7f3ed;
+      --ink:     #1a1a2a;
+      --ink-mid: #5a5a72;
+      --ink-dim: #9898aa;
+      --rule:    #ddd8cf;
+    }
+    body {
+      font-family: 'Source Serif 4', Georgia, serif;
+      background: var(--cream);
+      color: var(--ink);
+      line-height: 1.6;
+    }
+    .page { max-width: 980px; margin: 0 auto; padding: 70px 48px 110px; }
+    .eyebrow {
+      font-family: 'Fira Code', monospace;
+      font-size: 0.6rem; letter-spacing: 0.22em; text-transform: uppercase;
+      color: var(--ink-dim); margin-bottom: 18px;
+    }
+    h1 {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: clamp(3rem, 7vw, 5.4rem); font-weight: 300;
+      line-height: 0.95; margin-bottom: 22px;
+    }
+    h1 em { font-style: italic; }
+    .intro {
+      max-width: 650px; color: var(--ink-mid); font-weight: 300;
+      font-size: 1rem; margin-bottom: 62px;
+    }
+    .section-label {
+      font-family: 'Fira Code', monospace;
+      font-size: 0.58rem; letter-spacing: 0.22em; text-transform: uppercase;
+      color: var(--ink-dim); margin-bottom: 20px; padding-bottom: 10px;
+      border-bottom: 1px solid var(--rule);
+    }
+    .concept-panel { display: flex; flex-direction: column; gap: 18px; }
+    .canvas-wrap {
+      position: relative; border: 1px solid var(--rule);
+      background: #ede8e0; overflow: hidden;
+    }
+    canvas { display: block; width: 100%; height: auto; }
+    .phase-track {
+      height: 2px; background: var(--rule); position: relative; overflow: hidden;
+    }
+    .phase-track > div {
+      position: absolute; left: 0; top: 0; height: 100%;
+      transition: width 0.05s linear, background 0.4s ease;
+    }
+    .phase-row {
+      display: flex; justify-content: space-between; align-items: baseline;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.62rem; letter-spacing: 0.1em; color: var(--ink-mid);
+      padding-top: 7px;
+    }
+    .figure-legend {
+      display: flex; flex-wrap: wrap; gap: 10px 22px;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.58rem; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--ink-mid);
+    }
+    .leg { display: flex; align-items: center; gap: 8px; }
+    .sw { width: 28px; height: 14px; flex: 0 0 28px; }
+    .figure-caption {
+      font-size: 0.82rem; color: var(--ink-mid); font-weight: 300;
+      line-height: 1.65; border-top: 1px solid var(--rule); padding-top: 14px;
+    }
+    .figure-caption strong { font-weight: 400; color: var(--ink); }
+    @media (max-width: 800px) { .page { padding: 42px 24px 80px; } }
+  </style>
+</head>
+<body>
+<main class="page">
+
+  <div class="eyebrow">Research Proposal · Pore-Scale Physics</div>
+  <h1>Asphaltene<br><em>Damage</em></h1>
+  <p class="intro">Near-wellbore asphaltene deposition and its recovery in a producing reservoir, rendered at pore scale. Polycyclic aromatic aggregates precipitate when local pressure drops below the thermodynamic onset threshold, progressively restricting pore throats and collapsing near-wellbore permeability. Understanding the pore-scale geometry of this damage — and its dissolution — is the central problem of this research.</p>
+
+  <section>
+    <div class="section-label">01 · Pore-Network Mechanics</div>
+    <div class="concept-panel">
+
+      <div class="canvas-wrap">
+        <canvas id="c" aria-label="Animated pore-scale asphaltene deposition — Voronoi grain geometry, near-wellbore reservoir"></canvas>
+      </div>
+
+      <div>
+        <div class="phase-track"><div id="phaseBar"></div></div>
+        <div class="phase-row">
+          <span id="phaseLabel">Initializing…</span>
+          <span id="cycleTag"></span>
+        </div>
+      </div>
+
+      <div class="figure-legend">
+        <span class="leg">
+          <svg class="sw" viewBox="0 0 28 14">
+            <polygon points="4,7 14,2 24,7 14,12" fill="#b5b0a6" stroke="#8f8a82" stroke-width="0.8"/>
+          </svg>Rock grain
+        </span>
+        <span class="leg">
+          <svg class="sw" viewBox="0 0 28 14">
+            <polygon points="4,7 14,2 24,7 14,12" fill="#1a0d04"/>
+            <polygon points="8,7 14,4.5 20,7 14,9.5" fill="#b5b0a6"/>
+          </svg>Asphaltene coat
+        </span>
+        <span class="leg">
+          <svg class="sw" viewBox="0 0 28 14">
+            <line x1="3" y1="7" x2="25" y2="7" stroke="#2563eb" stroke-width="1.8" stroke-linecap="round" stroke-dasharray="4 5"/>
+          </svg>Oil flow
+        </span>
+        <span class="leg">
+          <svg class="sw" viewBox="0 0 28 14">
+            <line x1="3" y1="7" x2="25" y2="7" stroke="#b45309" stroke-width="2" stroke-linecap="round" stroke-dasharray="4 5"/>
+          </svg>Solvent front
+        </span>
+        <span class="leg">
+          <svg class="sw" viewBox="0 0 28 14">
+            <rect x="10" y="2" width="8" height="10" fill="#1a1a2a" opacity="0.22"/>
+          </svg>Wellbore
+        </span>
+      </div>
+
+      <p class="figure-caption">
+        <strong>Phase I — Open network:</strong> reservoir fluid saturates the grain-boundary pore space; connectivity is high and effective permeability isotropic.
+        <strong>Phase II — Onset:</strong> the local pressure drops below the thermodynamic onset threshold; Flory–Huggins instability drives polycyclic aromatic molecules out of solution onto grain surfaces — deposition most severe in the high-drawdown zone adjacent to the wellbore.
+        <strong>Phase III — Constriction:</strong> growing surface coatings narrow pore throats; near-wellbore effective permeability collapses to k/k₀ ≈ 0.15, disproportionate to deposit volume because the narrowest throats govern network connectivity.
+        <strong>Phase IV — Dissolution front:</strong> solvent infiltrates radially from the wellbore face, dissolving surface coatings as the front advances.
+        <strong>Phases V–VI — Recovery:</strong> throat apertures reopen progressively and permeability is restored as the dissolution front sweeps the near-wellbore zone.
+      </p>
+
+    </div>
+  </section>
+
+</main>
+<script>
+(function () {
+'use strict';
+
+const canvas = document.getElementById('c');
+const ctx    = canvas.getContext('2d');
+let W, H, dpr;
+let T = 0;
+
+/* ── Palette ── */
+const PORE  = '#e8e3da';
+const GRAIN = '#b5b0a6';
+const GLINE = '#8f8a82';
+const ASP   = '#000000';
+const OIL   = '#2563eb';
+const SOLV  = '#b45309';
+
+/* ── PRNG ── */
+let _s = 1;
+function sr(seed) { _s = (seed >>> 0) || 1; }
+function rn() { _s ^= _s << 13; _s ^= _s >>> 17; _s ^= _s << 5; return (_s >>> 0) / 4294967296; }
+
+/* ── Math ── */
+function smooth(t) { return t * t * (3 - 2 * t); }
+function lerp(a, b, t) { return a + (b - a) * t; }
+function clamp(v, lo, hi) { return v < lo ? lo : v > hi ? hi : v; }
+
+/* ── Phases ── */
+const CYCLE = 26;
+const PHASES = [
+  { label: 'I · Open pore network · saturated production',      t0: 0,  t1: 4,  col: '#2563eb' },
+  { label: 'II · Onset threshold · aggregation nucleates',      t0: 4,  t1: 9,  col: '#7c3503' },
+  { label: 'III · Throat constriction · permeability collapse', t0: 9,  t1: 14, col: '#050301' },
+  { label: 'IV · Solvent infiltration · dissolution front',     t0: 14, t1: 18, col: '#b45309' },
+  { label: 'V · Deposit mobilisation · throat reopening',       t0: 18, t1: 23, col: '#c07818' },
+  { label: 'VI · Network connectivity restored',                 t0: 23, t1: 26, col: '#2563eb' },
+];
+
+function getState(sec) {
+  const tc = sec % CYCLE;
+  for (let i = 0; i < PHASES.length; i++) {
+    const p = PHASES[i];
+    if (tc >= p.t0 && tc < p.t1) {
+      return { phase: i, progress: (tc - p.t0) / (p.t1 - p.t0), cycleP: tc / CYCLE, label: p.label, col: p.col };
+    }
+  }
+  const last = PHASES[PHASES.length - 1];
+  return { phase: 5, progress: 1, cycleP: 1, label: last.label, col: last.col };
+}
+
+/* ── Geometry ── */
+function circumcircle(a, b, c) {
+  const ax = b.x - a.x, ay = b.y - a.y;
+  const bx = c.x - a.x, by = c.y - a.y;
+  const D  = 2 * (ax * by - ay * bx);
+  if (Math.abs(D) < 1e-9) return null;
+  const ux = (by * (ax*ax + ay*ay) - ay * (bx*bx + by*by)) / D;
+  const uy = (ax * (bx*bx + by*by) - bx * (ax*ax + ay*ay)) / D;
+  return { x: a.x + ux, y: a.y + uy, r2: ux*ux + uy*uy };
+}
+
+function delaunay(pts) {
+  const n = pts.length;
+  const BIG = 2e5;
+  const sup = [{ x: 0.5, y: -BIG }, { x: 0.5 + BIG*2, y: BIG*2 }, { x: 0.5 - BIG*2, y: BIG*2 }];
+  const all = [...pts, ...sup];
+
+  function mkTri(a, b, c) { return { v: [a, b, c], cc: circumcircle(all[a], all[b], all[c]) }; }
+
+  let tris = [mkTri(n, n+1, n+2)];
+
+  for (let pi = 0; pi < n; pi++) {
+    const p = all[pi];
+    const bad = [];
+    const cnt = new Map();
+
+    for (const tri of tris) {
+      if (!tri.cc) continue;
+      const dx = p.x - tri.cc.x, dy = p.y - tri.cc.y;
+      if (dx*dx + dy*dy < tri.cc.r2 + 1e-7) {
+        bad.push(tri);
+        [[tri.v[0],tri.v[1]],[tri.v[1],tri.v[2]],[tri.v[2],tri.v[0]]].forEach(e => {
+          const key = Math.min(e[0],e[1]) + '_' + Math.max(e[0],e[1]);
+          cnt.set(key, (cnt.get(key) || 0) + 1);
+        });
+      }
+    }
+
+    tris = tris.filter(t => !bad.includes(t));
+    cnt.forEach((c, key) => {
+      if (c === 1) {
+        const [a, b] = key.split('_').map(Number);
+        tris.push(mkTri(a, b, pi));
+      }
+    });
+  }
+
+  return tris.filter(t => t.v.every(v => v < n));
+}
+
+function voronoiCells(pts, tris) {
+  const ccs = tris.map(t => t.cc || { x: 0, y: 0 });
+  return pts.map((p, pi) => {
+    const adj = [];
+    tris.forEach((t, ti) => { if (t.v.includes(pi)) adj.push(ti); });
+    adj.sort((a, b) => {
+      const aa = Math.atan2(ccs[a].y - p.y, ccs[a].x - p.x);
+      const ab = Math.atan2(ccs[b].y - p.y, ccs[b].x - p.x);
+      return aa - ab;
+    });
+    return adj.map(ti => ({ x: ccs[ti].x, y: ccs[ti].y }));
+  });
+}
+
+function buildThroatList(tris, nInterior) {
+  const edgeMap = new Map();
+  tris.forEach((t, ti) => {
+    [[t.v[0],t.v[1]],[t.v[1],t.v[2]],[t.v[2],t.v[0]]].forEach(e => {
+      const key = Math.min(e[0],e[1]) + '_' + Math.max(e[0],e[1]);
+      if (!edgeMap.has(key)) edgeMap.set(key, { a: e[0], b: e[1], tris: [] });
+      edgeMap.get(key).tris.push(ti);
+    });
+  });
+  return [...edgeMap.values()]
+    .filter(e => e.tris.length === 2 && e.a < nInterior && e.b < nInterior)
+    .map(e => ({ a: e.a, b: e.b, t1: e.tris[0], t2: e.tris[1], nd: 0, susc: 0 }));
+}
+
+/* ── Network state ── */
+let seeds = [], tris = [], cells = [], throats = [], triCC = [];
+const WELL_X = 26;
+
+function buildNetwork() {
+  sr(52847);
+  seeds = [];
+
+  /* Interior seeds: denser left third (near-wellbore) */
+  const marg = 22;
+  const zones = [
+    { x0: 58, x1: W * 0.37, y0: marg, y1: H - marg, n: 26 },
+    { x0: W * 0.37, x1: W - marg, y0: marg, y1: H - marg, n: 50 },
+  ];
+  zones.forEach(z => {
+    const cols = Math.max(2, Math.ceil(Math.sqrt(z.n * (z.x1 - z.x0) / Math.max(1, z.y1 - z.y0))));
+    const rows = Math.max(2, Math.ceil(z.n / cols));
+    const cw = (z.x1 - z.x0) / cols, ch = (z.y1 - z.y0) / rows;
+    let cnt = 0;
+    for (let r = 0; r < rows && cnt < z.n; r++)
+      for (let c = 0; c < cols && cnt < z.n; c++) {
+        seeds.push({ x: z.x0 + (c + 0.18 + rn() * 0.64) * cw, y: z.y0 + (r + 0.18 + rn() * 0.64) * ch });
+        cnt++;
+      }
+  });
+
+  const nInterior = seeds.length;
+
+  /* Boundary guards — constrain Voronoi cells at canvas edges */
+  const gap = 55;
+  for (let x = -gap; x <= W + gap; x += 60) {
+    seeds.push({ x, y: -gap }); seeds.push({ x, y: H + gap });
+  }
+  for (let y = 0; y <= H; y += 60) {
+    seeds.push({ x: -gap, y }); seeds.push({ x: W + gap, y });
+  }
+
+  /* Normalized distance and deposition susceptibility */
+  const maxX = Math.max(...seeds.slice(0, nInterior).map(s => s.x));
+  seeds.forEach((s, i) => {
+    s.nd   = clamp((s.x - WELL_X) / (maxX - WELL_X), 0, 1);
+    s.susc = Math.exp(-s.nd * 2.0);
+    s.isBnd = i >= nInterior;
+  });
+
+  tris  = delaunay(seeds);
+  cells = voronoiCells(seeds, tris);
+  triCC = tris.map(t => t.cc);
+
+  throats = buildThroatList(tris, nInterior);
+  throats.forEach(t => {
+    t.nd   = (seeds[t.a].nd + seeds[t.b].nd) / 2;
+    t.susc = Math.exp(-t.nd * 2.0);
+  });
+}
+
+/* ── Deposit physics ── */
+function getSolventFront(st) {
+  const { phase, progress } = st;
+  if (phase < 3) return 0;
+  if (phase >= 5) return 1.0;
+  // Combine phases 3+4 into one continuous curve (4s + 5s = 9s total).
+  // Single smoothstep across the combined window — no mid-point stall.
+  const dur3 = PHASES[3].t1 - PHASES[3].t0; // 4
+  const dur4 = PHASES[4].t1 - PHASES[4].t0; // 5
+  const combined = phase === 3
+    ? progress * (dur3 / (dur3 + dur4))
+    : dur3 / (dur3 + dur4) + progress * (dur4 / (dur3 + dur4));
+  return smooth(combined);
+}
+
+function depositFrac(nd, susc, st) {
+  const { phase, progress } = st;
+  if (phase === 0) return 0;
+  if (phase === 1) return susc * smooth(progress) * 0.38;
+  if (phase === 2) return susc * lerp(0.38, 1.0, smooth(progress));
+
+  const front = getSolventFront(st);
+  if (nd < front) {
+    const t = clamp((front - nd) / 0.24, 0, 1);
+    if (phase === 3) return susc * (1 - smooth(t));
+    return 0;
+  }
+  return susc;
+}
+
+function getKoverK0(st) {
+  const { phase, progress } = st;
+  if (phase === 0) return 1.00;
+  if (phase === 1) return lerp(1.00, 0.58, smooth(progress));
+  if (phase === 2) return lerp(0.58, 0.15, smooth(progress));
+  if (phase === 3) return lerp(0.15, 0.20, smooth(progress));
+  if (phase === 4) return lerp(0.20, 0.82, smooth(progress));
+  return lerp(0.82, 1.00, smooth(progress));
+}
+
+/* ── Draw helpers ── */
+function polyPath(verts) {
+  if (!verts || verts.length < 3) return;
+  ctx.moveTo(verts[0].x, verts[0].y);
+  for (let i = 1; i < verts.length; i++) ctx.lineTo(verts[i].x, verts[i].y);
+  ctx.closePath();
+}
+
+function shrinkCell(cell, seed, f) {
+  return cell.map(v => ({ x: seed.x + (v.x - seed.x) * f, y: seed.y + (v.y - seed.y) * f }));
+}
+
+/* ── Render ── */
+function drawBackground() {
+  ctx.fillStyle = PORE;
+  ctx.fillRect(0, 0, W, H);
+}
+
+function drawGrains(st) {
+  const BASE = 0.70;
+  const GROW = 0.22; // max ring width at full deposit
+
+  ctx.save();
+  ctx.beginPath(); ctx.rect(WELL_X + 1, 0, W, H); ctx.clip();
+
+  // Pass 1 — deposit rings using evenodd: only fills the annular band
+  // between the deposit boundary and the grain surface, so the ring
+  // never draws inside any grain interior (no cross-grain black smear).
+  ctx.fillStyle = ASP;
+  seeds.forEach((s, si) => {
+    if (s.isBnd) return;
+    const cell = cells[si];
+    if (!cell || cell.length < 3) return;
+    const dep = depositFrac(s.nd, s.susc, st);
+    if (dep < 0.05) return;
+    const dShr = BASE + dep * GROW;
+    ctx.beginPath();
+    polyPath(shrinkCell(cell, s, dShr)); // outer boundary
+    polyPath(shrinkCell(cell, s, BASE)); // inner hole
+    ctx.fill('evenodd');
+  });
+
+  // Pass 2 — grain fills on top: cover each grain interior in rock colour,
+  // masking any deposit ring that may have spilled into neighbouring cells.
+  ctx.fillStyle = GRAIN;
+  seeds.forEach((s, si) => {
+    if (s.isBnd) return;
+    const cell = cells[si];
+    if (!cell || cell.length < 3) return;
+    ctx.beginPath(); polyPath(shrinkCell(cell, s, BASE)); ctx.fill();
+  });
+
+  // Pass 3 — grain outlines
+  ctx.strokeStyle = GLINE;
+  ctx.lineWidth   = 0.6;
+  ctx.globalAlpha = 0.55;
+  seeds.forEach((s, si) => {
+    if (s.isBnd) return;
+    const cell = cells[si];
+    if (!cell || cell.length < 3) return;
+    ctx.beginPath(); polyPath(shrinkCell(cell, s, BASE)); ctx.stroke();
+  });
+  ctx.globalAlpha = 1;
+
+  ctx.restore();
+}
+
+
+/* Integrated dash offsets — never reverse regardless of speed changes */
+let oilOffset  = 0;
+let solvOffset = 0;
+
+function drawFlow(st) {
+  const { phase, progress } = st;
+  const front = getSolventFront(st);
+  const kk0   = getKoverK0(st);
+
+  ctx.save();
+  ctx.beginPath(); ctx.rect(WELL_X + 1, 0, W, H); ctx.clip();
+  ctx.lineCap = 'round';
+  ctx.setLineDash([3, 10]);
+
+  /* Oil — phases 0–2 and 5 — flows RIGHT → LEFT toward wellbore
+     Draw each throat from higher-x to lower-x so the "forward" direction
+     is leftward; lineDashOffset = -T*speed then advances dashes left. */
+  const showOil = phase < 3 || phase === 5;
+  if (showOil) {
+    const alpha = phase === 2 ? lerp(0.58, 0.04, smooth(progress))
+                : phase === 5 ? lerp(0.08, 0.58, smooth(progress))
+                : 0.58;
+    // Speed drops with permeability so viewer sees flow slow during damage
+    ctx.strokeStyle = OIL;
+    ctx.lineDashOffset = oilOffset;
+
+    throats.forEach(t => {
+      const dep = depositFrac(t.nd, t.susc, st);
+      if (dep > 0.92) return;
+      const cc1 = triCC[t.t1], cc2 = triCC[t.t2];
+      if (!cc1 || !cc2) return;
+      // Always high-x → low-x so dashes travel toward the well
+      const [fr, to] = cc1.x >= cc2.x ? [cc1, cc2] : [cc2, cc1];
+      ctx.globalAlpha = alpha * (1 - dep * 0.85);
+      ctx.lineWidth   = Math.max(0.3, (1 - dep) * 1.5);
+      ctx.beginPath(); ctx.moveTo(fr.x, fr.y); ctx.lineTo(to.x, to.y); ctx.stroke();
+    });
+    ctx.globalAlpha = 1;
+  }
+
+  /* Solvent — phases 3–4 — flows LEFT → RIGHT away from wellbore
+     Draw each throat from lower-x to higher-x; same negative offset
+     advances dashes rightward (injection direction). */
+  if (phase === 3 || phase === 4) {
+    const alpha = phase === 3 ? smooth(progress) * 0.70
+                : lerp(0.70, 0.28, smooth(progress));
+    ctx.strokeStyle = SOLV;
+    ctx.lineDashOffset = solvOffset;
+
+    throats.forEach(t => {
+      if (t.nd > front + 0.12) return;
+      const cc1 = triCC[t.t1], cc2 = triCC[t.t2];
+      if (!cc1 || !cc2) return;
+      // Always low-x → high-x so dashes travel away from the well
+      const [fr, to] = cc1.x <= cc2.x ? [cc1, cc2] : [cc2, cc1];
+      const fade = clamp((front - t.nd + 0.08) / 0.16, 0, 1);
+      ctx.globalAlpha = alpha * fade;
+      ctx.lineWidth   = 1.7;
+      ctx.beginPath(); ctx.moveTo(fr.x, fr.y); ctx.lineTo(to.x, to.y); ctx.stroke();
+    });
+    ctx.globalAlpha = 1;
+  }
+
+  ctx.setLineDash([]);
+  ctx.restore();
+}
+
+function drawWell() {
+  /* Wellbore column */
+  ctx.fillStyle = '#1a1a2a';
+  ctx.globalAlpha = 0.16;
+  ctx.fillRect(0, 0, WELL_X, H);
+  ctx.globalAlpha = 1;
+
+  ctx.strokeStyle = '#1a1a2a';
+  ctx.lineWidth   = 0.8;
+  ctx.globalAlpha = 0.30;
+  ctx.beginPath(); ctx.moveTo(WELL_X, 0); ctx.lineTo(WELL_X, H); ctx.stroke();
+  ctx.globalAlpha = 1;
+
+  /* Perforations */
+  ctx.strokeStyle = '#1a1a2a';
+  ctx.lineWidth   = 0.7;
+  ctx.globalAlpha = 0.20;
+  const nPerf = 6;
+  for (let i = 0; i < nPerf; i++) {
+    const py = H * (i + 1) / (nPerf + 1);
+    ctx.beginPath(); ctx.moveTo(WELL_X, py); ctx.lineTo(WELL_X + 10, py); ctx.stroke();
+  }
+  ctx.globalAlpha = 1;
+
+  /* Rotated label */
+  ctx.save();
+  ctx.translate(WELL_X - 8, H / 2);
+  ctx.rotate(-Math.PI / 2);
+  ctx.textAlign  = 'center';
+  ctx.font       = `9px 'Fira Code', monospace`;
+  ctx.fillStyle  = '#1a1a2a';
+  ctx.globalAlpha = 0.25;
+  ctx.fillText('WELLBORE', 0, 0);
+  ctx.globalAlpha = 1;
+  ctx.restore();
+}
+
+function drawAnnotations(st) {
+  const { phase, progress } = st;
+  const front = getSolventFront(st);
+  const kk0   = getKoverK0(st);
+  ctx.save();
+
+  /* k/k₀ indicator — bottom right */
+  const kPct = (kk0 * 100).toFixed(0);
+  const kCol = kk0 > 0.65 ? '#1d4ed8' : kk0 > 0.30 ? '#b45309' : '#8b1010';
+  ctx.font      = `bold 11px 'Fira Code', monospace`;
+  ctx.textAlign = 'right';
+  // Small cream backing so it reads over any grain colour
+  const kLabel  = `k/k₀ = ${kPct}%`;
+  const kMetrics = ctx.measureText(kLabel);
+  ctx.fillStyle  = 'rgba(232,227,218,0.82)';
+  ctx.fillRect(W - 14 - kMetrics.width, H - 26, kMetrics.width + 8, 18);
+  ctx.fillStyle   = kCol;
+  ctx.fillText(kLabel, W - 10, H - 12);
+  ctx.globalAlpha = 1;
+
+  /* Solvent dissolution front arc — phases 3-4 */
+  if (front > 0.02 && (phase === 3 || phase === 4)) {
+    const frontR = front * (W - WELL_X - 28);
+    const arcA   = phase === 3 ? smooth(progress) * 0.72 : lerp(0.72, 0.28, smooth(progress));
+    ctx.strokeStyle = `rgba(180,83,9,${arcA.toFixed(3)})`;
+    ctx.lineWidth   = 1.8;
+    ctx.setLineDash([5, 8]);
+    ctx.beginPath();
+    ctx.arc(WELL_X, H / 2, frontR, -Math.PI * 0.68, Math.PI * 0.68);
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  /* Zone labels — top strip */
+  ctx.font      = `9px 'Fira Code', monospace`;
+  ctx.fillStyle = '#9898aa';
+  ctx.globalAlpha = 0.62;
+  ctx.textAlign = 'left';
+  ctx.fillText('Near-wellbore', WELL_X + 7, 13);
+  ctx.textAlign = 'right';
+  ctx.fillText('Far field', W - 7, 13);
+  ctx.globalAlpha = 1;
+
+  ctx.restore();
+}
+
+/* ── UI ── */
+const phaseBar   = document.getElementById('phaseBar');
+const phaseLabel = document.getElementById('phaseLabel');
+const cycleTag   = document.getElementById('cycleTag');
+
+function updateUI(st, sec) {
+  phaseBar.style.width      = (st.cycleP * 100).toFixed(2) + '%';
+  phaseBar.style.background = st.col;
+  phaseLabel.textContent    = st.label;
+  cycleTag.textContent      = `↺ ${(CYCLE - sec % CYCLE).toFixed(1)}s`;
+}
+
+/* ── Resize ── */
+function resize() {
+  const rect = canvas.getBoundingClientRect();
+  dpr = Math.min(window.devicePixelRatio || 1, 2);
+  W   = rect.width;
+  H   = Math.round(W / (900 / 400));
+  canvas.width        = W * dpr;
+  canvas.height       = H * dpr;
+  canvas.style.height = H + 'px';
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  buildNetwork();
+}
+
+window.addEventListener('resize', () => resize());
+resize();
+
+/* ── Loop ── */
+let t0 = null, prevT = 0;
+function frame(ts) {
+  if (!t0) t0 = ts;
+  T = (ts - t0) / 1000;
+  const dt = T - prevT;
+  prevT = T;
+
+  const st  = getState(T);
+  const kk0 = getKoverK0(st);
+
+  // Integrate oil offset: always moves negative (leftward dash travel)
+  // Speed drops with permeability — dashes slow during damage, never reverse
+  oilOffset  -= dt * Math.max(0.05, kk0) * 46;
+  // Solvent offset: always moves negative (rightward, since drawn left→right)
+  solvOffset -= dt * 50;
+
+  drawBackground();
+  drawFlow(st);
+  drawGrains(st);
+  drawWell();
+  drawAnnotations(st);
+  updateUI(st, T);
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+
+})();
+</script>
+</body>
+</html>

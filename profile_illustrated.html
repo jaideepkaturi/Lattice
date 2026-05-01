@@ -226,40 +226,14 @@
       filter: url(#crPulseGlow);
     }
     .current-panel + .current-panel { margin-top: 22px; }
-    .current-figure.asphaltene-figure { aspect-ratio: 2.35; margin-top: 0; }
-    .asphaltene-figure .well-shadow { fill: none; stroke: #1a1a2a; stroke-width: 14; stroke-linecap: round; opacity: 0.16; }
-    .asphaltene-figure .well-core { fill: none; stroke: #1a1a2a; stroke-width: 4; stroke-linecap: round; opacity: 0.38; }
-    .asphaltene-figure .perf { fill: var(--blue); opacity: 0.42; }
-    .asphaltene-figure .pore-throat,
-    .asphaltene-figure .pore-link {
-      fill: none;
-      stroke: #aaa397;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-    }
-    .asphaltene-figure .pore-throat { stroke-width: 2.2; opacity: 0.44; }
-    .asphaltene-figure .pore-link { stroke-width: 1.25; opacity: 0.30; }
-    .asphaltene-figure .pore-body { fill: #f7f3ed; stroke: #aaa397; stroke-width: 1.4; opacity: 0.58; }
-    .asphaltene-figure .pore-body.blocked { fill: #8f8a82; stroke: #777168; opacity: 0.68; }
-    .asphaltene-figure .flow-stream,
-    .asphaltene-figure .remediation-stream {
-      fill: none;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-    }
-    .asphaltene-figure .flow-stream {
-      stroke: #1d4ed8;
-      stroke-width: 2.5;
-      stroke-dasharray: 1 8;
-      opacity: 0.62;
-    }
-    .asphaltene-figure .flow-stream.entering { opacity: 0.70; }
-    .asphaltene-figure .restored-flow { opacity: 0; }
-    .asphaltene-figure .remediation-stream {
-      stroke: #b45309;
-      stroke-width: 3;
-      stroke-dasharray: 2 10;
-      opacity: 0;
+    .current-figure.asphaltene-figure { aspect-ratio: auto; margin-top: 0; }
+    .asp-canvas { display: block; width: 100%; height: 340px; background: #e8e3da; }
+    .asp-phase-track { height: 2px; background: var(--rule); position: relative; overflow: hidden; }
+    .asp-phase-bar { position: absolute; left: 0; top: 0; height: 100%; transition: width 0.05s linear, background 0.4s ease; }
+    .asp-phase-row {
+      display: flex; justify-content: space-between; align-items: baseline;
+      font-family: var(--mono); font-size: 0.55rem; letter-spacing: 0.1em;
+      color: var(--ink-mid); padding-top: 6px;
     }
     .figure-legend {
       order: 3;
@@ -447,187 +421,33 @@
       </div>
 
       <div class="current-figure asphaltene-figure">
-        <svg viewBox="0 0 760 320" xmlns="http://www.w3.org/2000/svg" aria-label="Asphaltene remediation in an interconnected pore network">
-          <rect width="760" height="320" fill="#f7f3ed"/>
-
-          <g>
-            <line class="well-shadow" x1="108" y1="42" x2="108" y2="278"/>
-            <line class="well-core" x1="108" y1="42" x2="108" y2="278"/>
-            <circle class="perf" cx="108" cy="76" r="3.8"/>
-            <circle class="perf" cx="108" cy="110" r="3.8"/>
-            <circle class="perf" cx="108" cy="145" r="3.8"/>
-            <circle class="perf" cx="108" cy="181" r="3.8"/>
-            <circle class="perf" cx="108" cy="216" r="3.8"/>
-            <circle class="perf" cx="108" cy="250" r="3.8"/>
-          </g>
-
-          <g>
-            <path class="pore-throat" d="M108,76 C130,72 144,70 162,74 C186,80 198,60 224,62 C250,64 264,88 292,84 C320,80 336,58 366,60 C398,62 416,88 450,86 C486,84 512,72 550,80 C582,86 606,92 640,88"/>
-            <path class="pore-throat" d="M108,110 C132,108 146,118 168,120 C196,123 210,144 240,140 C270,136 286,112 318,116 C350,120 366,148 402,148 C436,148 456,126 492,130 C526,134 548,154 584,150 C614,146 636,136 666,142"/>
-            <path class="pore-throat" d="M108,145 C134,150 148,164 174,166 C206,168 222,188 254,184 C286,180 304,154 338,160 C372,166 390,190 426,190 C462,190 482,170 518,176 C550,182 570,204 606,202 C638,200 662,188 696,194"/>
-            <path class="pore-throat" d="M108,181 C132,186 148,204 174,208 C206,213 224,230 258,224 C292,218 310,198 346,204 C382,210 400,236 438,236 C474,236 496,216 532,222 C566,228 588,246 624,242 C650,239 666,232 688,236"/>
-            <path class="pore-throat" d="M108,216 C132,226 148,246 178,248 C210,250 230,260 264,252 C298,244 318,226 354,234 C390,242 412,260 452,260 C490,260 514,248 552,254 C578,258 600,262 628,258"/>
-
-            <path class="pore-link" d="M162,74 C162,92 164,106 168,120"/>
-            <path class="pore-link" d="M224,62 C228,92 232,116 240,140"/>
-            <path class="pore-link" d="M292,84 C298,98 306,110 318,116"/>
-            <path class="pore-link" d="M366,60 C370,94 382,124 402,148"/>
-            <path class="pore-link" d="M450,86 C458,104 472,120 492,130"/>
-            <path class="pore-link" d="M550,80 C556,110 568,132 584,150"/>
-            <path class="pore-link" d="M168,120 C168,140 170,154 174,166"/>
-            <path class="pore-link" d="M240,140 C242,160 248,174 254,184"/>
-            <path class="pore-link" d="M318,116 C322,138 330,152 338,160"/>
-            <path class="pore-link" d="M402,148 C406,166 416,180 426,190"/>
-            <path class="pore-link" d="M492,130 C500,150 510,166 518,176"/>
-            <path class="pore-link" d="M584,150 C590,170 598,190 606,202"/>
-            <path class="pore-link" d="M174,166 C172,182 172,196 174,208"/>
-            <path class="pore-link" d="M254,184 C252,200 254,214 258,224"/>
-            <path class="pore-link" d="M338,160 C338,178 342,194 346,204"/>
-            <path class="pore-link" d="M426,190 C426,210 432,226 438,236"/>
-            <path class="pore-link" d="M518,176 C520,196 526,212 532,222"/>
-            <path class="pore-link" d="M606,202 C612,218 618,232 624,242"/>
-            <path class="pore-link" d="M174,208 C172,226 174,240 178,248"/>
-            <path class="pore-link" d="M258,224 C256,236 258,246 264,252"/>
-            <path class="pore-link" d="M346,204 C344,218 348,228 354,234"/>
-            <path class="pore-link" d="M438,236 C440,248 444,256 452,260"/>
-            <path class="pore-link" d="M532,222 C536,238 544,248 552,254"/>
-          </g>
-
-          <g>
-            <path class="flow-stream entering" d="M640,88 C606,92 582,86 550,80 C512,72 486,84 450,86 C416,88 398,62 366,60 C336,58 320,80 292,84 C264,88 250,64 224,62 C198,60 186,80 162,74 C144,70 130,72 108,76">
-              <animate attributeName="stroke-dashoffset" from="0" to="-36" dur="1.6s" repeatCount="indefinite"/>
-              <animate attributeName="opacity" values="0.7;0.7;0;0;0.7" keyTimes="0;0.66;0.72;0.98;1" dur="10s" repeatCount="indefinite"/>
-            </path>
-            <path class="flow-stream" d="M666,142 C636,136 614,146 584,150 C548,154 526,134 492,130 C456,126 436,148 402,148">
-              <animate attributeName="stroke-dashoffset" from="0" to="-36" dur="1.6s" repeatCount="indefinite"/>
-              <animate attributeName="opacity" values="0.62;0.62;0.62;0.62;0" keyTimes="0;0.66;0.72;0.98;1" dur="10s" repeatCount="indefinite"/>
-            </path>
-            <path class="flow-stream" d="M696,194 C662,188 638,200 606,202 C570,204 550,182 518,176">
-              <animate attributeName="stroke-dashoffset" from="0" to="-36" dur="1.6s" repeatCount="indefinite"/>
-              <animate attributeName="opacity" values="0.62;0.62;0.62;0.62;0" keyTimes="0;0.66;0.72;0.98;1" dur="10s" repeatCount="indefinite"/>
-            </path>
-            <path class="flow-stream" d="M688,236 C666,232 650,239 624,242 C588,246 566,228 532,222 C496,216 474,236 438,236">
-              <animate attributeName="stroke-dashoffset" from="0" to="-36" dur="1.6s" repeatCount="indefinite"/>
-              <animate attributeName="opacity" values="0.62;0.62;0.62;0.62;0" keyTimes="0;0.66;0.72;0.98;1" dur="10s" repeatCount="indefinite"/>
-            </path>
-            <path class="flow-stream" d="M628,258 C600,262 578,258 552,254">
-              <animate attributeName="stroke-dashoffset" from="0" to="-36" dur="1.6s" repeatCount="indefinite"/>
-              <animate attributeName="opacity" values="0.62;0.62;0.62;0.62;0" keyTimes="0;0.66;0.72;0.98;1" dur="10s" repeatCount="indefinite"/>
-            </path>
-          </g>
-
-          <g>
-            <path class="remediation-stream" d="M108,110 C132,108 146,118 168,120 C196,123 210,144 240,140 C270,136 286,112 318,116 C350,120 366,148 402,148">
-              <animate attributeName="stroke-dashoffset" from="0" to="-48" dur="1.6s" repeatCount="indefinite"/>
-              <animate attributeName="opacity" values="0;0;0.72;0.72;0;0" keyTimes="0;0.24;0.32;0.66;0.72;1" dur="10s" repeatCount="indefinite"/>
-            </path>
-            <path class="remediation-stream" d="M108,145 C134,150 148,164 174,166 C206,168 222,188 254,184 C286,180 304,154 338,160 C372,166 390,190 426,190 C462,190 482,170 518,176">
-              <animate attributeName="stroke-dashoffset" from="0" to="-48" dur="1.6s" repeatCount="indefinite"/>
-              <animate attributeName="opacity" values="0;0;0.72;0.72;0;0" keyTimes="0;0.24;0.32;0.66;0.72;1" dur="10s" repeatCount="indefinite"/>
-            </path>
-            <path class="remediation-stream" d="M108,181 C132,186 148,204 174,208 C206,213 224,230 258,224 C292,218 310,198 346,204 C382,210 400,236 438,236">
-              <animate attributeName="stroke-dashoffset" from="0" to="-48" dur="1.6s" repeatCount="indefinite"/>
-              <animate attributeName="opacity" values="0;0;0.72;0.72;0;0" keyTimes="0;0.24;0.32;0.66;0.72;1" dur="10s" repeatCount="indefinite"/>
-            </path>
-            <path class="remediation-stream" d="M108,216 C132,226 148,246 178,248 C210,250 230,260 264,252 C298,244 318,226 354,234 C390,242 412,260 452,260 C490,260 514,248 552,254">
-              <animate attributeName="stroke-dashoffset" from="0" to="-48" dur="1.6s" repeatCount="indefinite"/>
-              <animate attributeName="opacity" values="0;0;0.72;0.72;0;0" keyTimes="0;0.24;0.32;0.66;0.72;1" dur="10s" repeatCount="indefinite"/>
-            </path>
-          </g>
-
-          <g>
-            <path class="flow-stream entering restored-flow" d="M640,88 C606,92 582,86 550,80 C512,72 486,84 450,86 C416,88 398,62 366,60 C336,58 320,80 292,84 C264,88 250,64 224,62 C198,60 186,80 162,74 C144,70 130,72 108,76">
-              <animate attributeName="stroke-dashoffset" from="0" to="-36" dur="1.6s" repeatCount="indefinite"/>
-              <animate attributeName="opacity" values="0;0;0.7;0.7;0" keyTimes="0;0.66;0.72;0.98;1" dur="10s" repeatCount="indefinite"/>
-            </path>
-            <path class="flow-stream restored-flow" d="M402,148 C366,148 350,120 318,116 C286,112 270,136 240,140 C210,144 196,123 168,120 C146,118 132,108 108,110">
-              <animate attributeName="stroke-dashoffset" from="0" to="-36" dur="1.6s" repeatCount="indefinite"/>
-              <animate attributeName="opacity" values="0;0;0.62;0.62;0" keyTimes="0;0.68;0.72;0.98;1" dur="10s" repeatCount="indefinite"/>
-            </path>
-            <path class="flow-stream restored-flow" d="M518,176 C482,170 462,190 426,190 C390,190 372,166 338,160 C304,154 286,180 254,184 C222,188 206,168 174,166 C148,164 134,150 108,145">
-              <animate attributeName="stroke-dashoffset" from="0" to="-36" dur="1.6s" repeatCount="indefinite"/>
-              <animate attributeName="opacity" values="0;0;0.62;0.62;0" keyTimes="0;0.68;0.72;0.98;1" dur="10s" repeatCount="indefinite"/>
-            </path>
-            <path class="flow-stream restored-flow" d="M438,236 C400,236 382,210 346,204 C310,198 292,218 258,224 C224,230 206,213 174,208 C148,204 132,186 108,181">
-              <animate attributeName="stroke-dashoffset" from="0" to="-36" dur="1.6s" repeatCount="indefinite"/>
-              <animate attributeName="opacity" values="0;0;0.62;0.62;0" keyTimes="0;0.68;0.72;0.98;1" dur="10s" repeatCount="indefinite"/>
-            </path>
-            <path class="flow-stream restored-flow" d="M552,254 C514,248 490,260 452,260 C412,260 390,242 354,234 C318,226 298,244 264,252 C230,260 210,250 178,248 C148,246 132,226 108,216">
-              <animate attributeName="stroke-dashoffset" from="0" to="-36" dur="1.6s" repeatCount="indefinite"/>
-              <animate attributeName="opacity" values="0;0;0.62;0.62;0" keyTimes="0;0.68;0.72;0.98;1" dur="10s" repeatCount="indefinite"/>
-            </path>
-          </g>
-
-          <g>
-            <circle class="pore-body" cx="162" cy="74" r="7.5"/>
-            <circle class="pore-body" cx="224" cy="62" r="8.5"/>
-            <circle class="pore-body" cx="292" cy="84" r="6.5"/>
-            <circle class="pore-body" cx="366" cy="60" r="7.5"/>
-            <circle class="pore-body" cx="450" cy="86" r="6.5"/>
-            <circle class="pore-body" cx="550" cy="80" r="7.5"/>
-            <circle class="pore-body" cx="640" cy="88" r="7"/>
-            <circle class="pore-body" cx="168" cy="120" r="8"/>
-            <circle class="pore-body" cx="240" cy="140" r="9"/>
-            <circle class="pore-body" cx="318" cy="116" r="7"/>
-            <circle class="pore-body blocked" cx="402" cy="148" r="8.5">
-              <animate attributeName="fill" values="#8f8a82;#8f8a82;#f7f3ed;#f7f3ed;#8f8a82" keyTimes="0;0.56;0.70;0.98;1" dur="10s" repeatCount="indefinite"/>
-              <animate attributeName="stroke" values="#777168;#777168;#aaa397;#aaa397;#777168" keyTimes="0;0.56;0.70;0.98;1" dur="10s" repeatCount="indefinite"/>
-            </circle>
-            <circle class="pore-body" cx="492" cy="130" r="7.5"/>
-            <circle class="pore-body" cx="584" cy="150" r="8"/>
-            <circle class="pore-body" cx="666" cy="142" r="7.5"/>
-            <circle class="pore-body" cx="174" cy="166" r="7.5"/>
-            <circle class="pore-body" cx="254" cy="184" r="8.5"/>
-            <circle class="pore-body" cx="338" cy="160" r="8"/>
-            <circle class="pore-body" cx="426" cy="190" r="7.5"/>
-            <circle class="pore-body blocked" cx="518" cy="176" r="8">
-              <animate attributeName="fill" values="#8f8a82;#8f8a82;#f7f3ed;#f7f3ed;#8f8a82" keyTimes="0;0.56;0.70;0.98;1" dur="10s" repeatCount="indefinite"/>
-              <animate attributeName="stroke" values="#777168;#777168;#aaa397;#aaa397;#777168" keyTimes="0;0.56;0.70;0.98;1" dur="10s" repeatCount="indefinite"/>
-            </circle>
-            <circle class="pore-body" cx="606" cy="202" r="7.5"/>
-            <circle class="pore-body" cx="696" cy="194" r="7"/>
-            <circle class="pore-body" cx="174" cy="208" r="8"/>
-            <circle class="pore-body" cx="258" cy="224" r="7.5"/>
-            <circle class="pore-body" cx="346" cy="204" r="8.5"/>
-            <circle class="pore-body blocked" cx="438" cy="236" r="8">
-              <animate attributeName="fill" values="#8f8a82;#8f8a82;#f7f3ed;#f7f3ed;#8f8a82" keyTimes="0;0.56;0.70;0.98;1" dur="10s" repeatCount="indefinite"/>
-              <animate attributeName="stroke" values="#777168;#777168;#aaa397;#aaa397;#777168" keyTimes="0;0.56;0.70;0.98;1" dur="10s" repeatCount="indefinite"/>
-            </circle>
-            <circle class="pore-body" cx="532" cy="222" r="7.5"/>
-            <circle class="pore-body" cx="624" cy="242" r="7.5"/>
-            <circle class="pore-body" cx="688" cy="236" r="6.5"/>
-            <circle class="pore-body" cx="178" cy="248" r="7"/>
-            <circle class="pore-body" cx="264" cy="252" r="8"/>
-            <circle class="pore-body" cx="354" cy="234" r="7.5"/>
-            <circle class="pore-body" cx="452" cy="260" r="8"/>
-            <circle class="pore-body blocked" cx="552" cy="254" r="7.5">
-              <animate attributeName="fill" values="#8f8a82;#8f8a82;#f7f3ed;#f7f3ed;#8f8a82" keyTimes="0;0.56;0.70;0.98;1" dur="10s" repeatCount="indefinite"/>
-              <animate attributeName="stroke" values="#777168;#777168;#aaa397;#aaa397;#777168" keyTimes="0;0.56;0.70;0.98;1" dur="10s" repeatCount="indefinite"/>
-            </circle>
-            <circle class="pore-body" cx="628" cy="258" r="7"/>
-          </g>
-        </svg>
+        <canvas id="asp-canvas" class="asp-canvas" aria-label="Animated pore-scale asphaltene deposition — Voronoi grain geometry"></canvas>
+        <div class="asp-phase-track"><div class="asp-phase-bar" id="asp-phaseBar"></div></div>
+        <div class="asp-phase-row">
+          <span id="asp-phaseLabel">Initializing…</span>
+          <span id="asp-cycleTag"></span>
+        </div>
       </div>
 
       <div class="figure-legend" aria-label="Figure legend">
         <span class="legend-item">
-          <svg class="legend-swatch" viewBox="0 0 28 14" aria-hidden="true"><circle cx="14" cy="7" r="5" fill="#f7f3ed" stroke="#aaa397" stroke-width="1.4" opacity="0.58"/></svg>
-          Open pore
+          <svg class="legend-swatch" viewBox="0 0 28 14" aria-hidden="true"><polygon points="4,7 14,2 24,7 14,12" fill="#b5b0a6" stroke="#8f8a82" stroke-width="0.8"/></svg>
+          Rock grain
         </span>
         <span class="legend-item">
-          <svg class="legend-swatch" viewBox="0 0 28 14" aria-hidden="true"><circle cx="14" cy="7" r="5" fill="#8f8a82" stroke="#777168" stroke-width="1.4" opacity="0.68"/></svg>
-          Asphaltene block
+          <svg class="legend-swatch" viewBox="0 0 28 14" aria-hidden="true"><polygon points="4,7 14,2 24,7 14,12" fill="#000"/><polygon points="8,7 14,4.5 20,7 14,9.5" fill="#b5b0a6"/></svg>
+          Asphaltene coat
         </span>
         <span class="legend-item">
-          <svg class="legend-swatch" viewBox="0 0 28 14" aria-hidden="true"><line x1="3" y1="7" x2="25" y2="7" stroke="#1d4ed8" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="1 6"/></svg>
-          Production flow
+          <svg class="legend-swatch" viewBox="0 0 28 14" aria-hidden="true"><line x1="3" y1="7" x2="25" y2="7" stroke="#2563eb" stroke-width="1.8" stroke-linecap="round" stroke-dasharray="4 5"/></svg>
+          Oil flow
         </span>
         <span class="legend-item">
-          <svg class="legend-swatch" viewBox="0 0 28 14" aria-hidden="true"><line x1="3" y1="7" x2="25" y2="7" stroke="#b45309" stroke-width="3" stroke-linecap="round" stroke-dasharray="2 6"/></svg>
-          Remediation fluid
+          <svg class="legend-swatch" viewBox="0 0 28 14" aria-hidden="true"><line x1="3" y1="7" x2="25" y2="7" stroke="#b45309" stroke-width="2" stroke-linecap="round" stroke-dasharray="4 5"/></svg>
+          Solvent front
         </span>
         <span class="legend-item">
-          <svg class="legend-swatch" viewBox="0 0 28 14" aria-hidden="true"><line x1="14" y1="2" x2="14" y2="12" stroke="#1a1a2a" stroke-width="5" stroke-linecap="round" opacity="0.28"/></svg>
+          <svg class="legend-swatch" viewBox="0 0 28 14" aria-hidden="true"><rect x="11" y="2" width="6" height="10" fill="#1a1a2a" opacity="0.22"/></svg>
           Wellbore
         </span>
       </div>
@@ -1410,6 +1230,374 @@ function runWhenVisible(target, callback, options = {}) {
     startTime = null;
     requestAnimationFrame(draw);
   });
+})();
+</script>
+
+<script>
+/* ── Asphaltene pore-scale animation ── */
+(function () {
+'use strict';
+
+const canvas = document.getElementById('asp-canvas');
+if (!canvas) return;
+const ctx = canvas.getContext('2d');
+let W, H, dpr;
+let T = 0;
+
+const PORE  = '#e8e3da';
+const GRAIN = '#b5b0a6';
+const GLINE = '#8f8a82';
+const ASP   = '#000000';
+const OIL   = '#2563eb';
+const SOLV  = '#b45309';
+
+let _s = 1;
+function sr(seed) { _s = (seed >>> 0) || 1; }
+function rn() { _s ^= _s << 13; _s ^= _s >>> 17; _s ^= _s << 5; return (_s >>> 0) / 4294967296; }
+
+function smooth(t) { return t * t * (3 - 2 * t); }
+function lerp(a, b, t) { return a + (b - a) * t; }
+function clamp(v, lo, hi) { return v < lo ? lo : v > hi ? hi : v; }
+
+const CYCLE = 26;
+const PHASES = [
+  { label: 'I · Open pore network · saturated production',      t0: 0,  t1: 4,  col: '#2563eb' },
+  { label: 'II · Onset threshold · aggregation nucleates',      t0: 4,  t1: 9,  col: '#7c3503' },
+  { label: 'III · Throat constriction · permeability collapse', t0: 9,  t1: 14, col: '#050301' },
+  { label: 'IV · Solvent infiltration · dissolution front',     t0: 14, t1: 18, col: '#b45309' },
+  { label: 'V · Deposit mobilisation · throat reopening',       t0: 18, t1: 23, col: '#c07818' },
+  { label: 'VI · Network connectivity restored',                 t0: 23, t1: 26, col: '#2563eb' },
+];
+
+function getState(sec) {
+  const tc = sec % CYCLE;
+  for (let i = 0; i < PHASES.length; i++) {
+    const p = PHASES[i];
+    if (tc >= p.t0 && tc < p.t1)
+      return { phase: i, progress: (tc - p.t0) / (p.t1 - p.t0), cycleP: tc / CYCLE, label: p.label, col: p.col };
+  }
+  const last = PHASES[PHASES.length - 1];
+  return { phase: 5, progress: 1, cycleP: 1, label: last.label, col: last.col };
+}
+
+function circumcircle(a, b, c) {
+  const ax = b.x - a.x, ay = b.y - a.y;
+  const bx = c.x - a.x, by = c.y - a.y;
+  const D  = 2 * (ax * by - ay * bx);
+  if (Math.abs(D) < 1e-9) return null;
+  const ux = (by * (ax*ax + ay*ay) - ay * (bx*bx + by*by)) / D;
+  const uy = (ax * (bx*bx + by*by) - bx * (ax*ax + ay*ay)) / D;
+  return { x: a.x + ux, y: a.y + uy, r2: ux*ux + uy*uy };
+}
+
+function delaunay(pts) {
+  const n = pts.length;
+  const BIG = 2e5;
+  const sup = [{ x: 0.5, y: -BIG }, { x: 0.5 + BIG*2, y: BIG*2 }, { x: 0.5 - BIG*2, y: BIG*2 }];
+  const all = [...pts, ...sup];
+  function mkTri(a, b, c) { return { v: [a, b, c], cc: circumcircle(all[a], all[b], all[c]) }; }
+  let tris = [mkTri(n, n+1, n+2)];
+  for (let pi = 0; pi < n; pi++) {
+    const p = all[pi];
+    const bad = [], cnt = new Map();
+    for (const tri of tris) {
+      if (!tri.cc) continue;
+      const dx = p.x - tri.cc.x, dy = p.y - tri.cc.y;
+      if (dx*dx + dy*dy < tri.cc.r2 + 1e-7) {
+        bad.push(tri);
+        [[tri.v[0],tri.v[1]],[tri.v[1],tri.v[2]],[tri.v[2],tri.v[0]]].forEach(e => {
+          const key = Math.min(e[0],e[1]) + '_' + Math.max(e[0],e[1]);
+          cnt.set(key, (cnt.get(key) || 0) + 1);
+        });
+      }
+    }
+    tris = tris.filter(t => !bad.includes(t));
+    cnt.forEach((c, key) => {
+      if (c === 1) { const [a, b] = key.split('_').map(Number); tris.push(mkTri(a, b, pi)); }
+    });
+  }
+  return tris.filter(t => t.v.every(v => v < n));
+}
+
+function voronoiCells(pts, tris) {
+  const ccs = tris.map(t => t.cc || { x: 0, y: 0 });
+  return pts.map((p, pi) => {
+    const adj = [];
+    tris.forEach((t, ti) => { if (t.v.includes(pi)) adj.push(ti); });
+    adj.sort((a, b) => Math.atan2(ccs[a].y - p.y, ccs[a].x - p.x) - Math.atan2(ccs[b].y - p.y, ccs[b].x - p.x));
+    return adj.map(ti => ({ x: ccs[ti].x, y: ccs[ti].y }));
+  });
+}
+
+function buildThroatList(tris, nInt) {
+  const em = new Map();
+  tris.forEach((t, ti) => {
+    [[t.v[0],t.v[1]],[t.v[1],t.v[2]],[t.v[2],t.v[0]]].forEach(e => {
+      const key = Math.min(e[0],e[1]) + '_' + Math.max(e[0],e[1]);
+      if (!em.has(key)) em.set(key, { a: e[0], b: e[1], tris: [] });
+      em.get(key).tris.push(ti);
+    });
+  });
+  return [...em.values()]
+    .filter(e => e.tris.length === 2 && e.a < nInt && e.b < nInt)
+    .map(e => ({ a: e.a, b: e.b, t1: e.tris[0], t2: e.tris[1], nd: 0, susc: 0 }));
+}
+
+let seeds = [], tris = [], cells = [], throats = [], triCC = [];
+const WELL_X = 26;
+
+function buildNetwork() {
+  sr(52847);
+  seeds = [];
+  const marg = 22;
+  const zones = [
+    { x0: 58, x1: W * 0.37, y0: marg, y1: H - marg, n: 26 },
+    { x0: W * 0.37, x1: W - marg, y0: marg, y1: H - marg, n: 50 },
+  ];
+  zones.forEach(z => {
+    const cols = Math.max(2, Math.ceil(Math.sqrt(z.n * (z.x1 - z.x0) / Math.max(1, z.y1 - z.y0))));
+    const rows = Math.max(2, Math.ceil(z.n / cols));
+    const cw = (z.x1 - z.x0) / cols, ch = (z.y1 - z.y0) / rows;
+    let cnt = 0;
+    for (let r = 0; r < rows && cnt < z.n; r++)
+      for (let c = 0; c < cols && cnt < z.n; c++) {
+        seeds.push({ x: z.x0 + (c + 0.18 + rn() * 0.64) * cw, y: z.y0 + (r + 0.18 + rn() * 0.64) * ch });
+        cnt++;
+      }
+  });
+  const nInt = seeds.length;
+  const gap = 55;
+  for (let x = -gap; x <= W + gap; x += 60) { seeds.push({ x, y: -gap }); seeds.push({ x, y: H + gap }); }
+  for (let y = 0; y <= H; y += 60) { seeds.push({ x: -gap, y }); seeds.push({ x: W + gap, y }); }
+  const maxX = Math.max(...seeds.slice(0, nInt).map(s => s.x));
+  seeds.forEach((s, i) => { s.nd = clamp((s.x - WELL_X) / (maxX - WELL_X), 0, 1); s.susc = Math.exp(-s.nd * 2.0); s.isBnd = i >= nInt; });
+  tris  = delaunay(seeds);
+  cells = voronoiCells(seeds, tris);
+  triCC = tris.map(t => t.cc);
+  throats = buildThroatList(tris, nInt);
+  throats.forEach(t => { t.nd = (seeds[t.a].nd + seeds[t.b].nd) / 2; t.susc = Math.exp(-t.nd * 2.0); });
+}
+
+function getSolventFront(st) {
+  const { phase, progress } = st;
+  if (phase < 3) return 0;
+  if (phase >= 5) return 1.0;
+  const dur3 = PHASES[3].t1 - PHASES[3].t0;
+  const dur4 = PHASES[4].t1 - PHASES[4].t0;
+  const combined = phase === 3 ? progress * (dur3 / (dur3 + dur4)) : dur3 / (dur3 + dur4) + progress * (dur4 / (dur3 + dur4));
+  return smooth(combined);
+}
+
+function depositFrac(nd, susc, st) {
+  const { phase, progress } = st;
+  if (phase === 0) return 0;
+  if (phase === 1) return susc * smooth(progress) * 0.38;
+  if (phase === 2) return susc * lerp(0.38, 1.0, smooth(progress));
+  const front = getSolventFront(st);
+  if (nd < front) {
+    const t = clamp((front - nd) / 0.24, 0, 1);
+    if (phase === 3) return susc * (1 - smooth(t));
+    return 0;
+  }
+  return susc;
+}
+
+function getKoverK0(st) {
+  const { phase, progress } = st;
+  if (phase === 0) return 1.00;
+  if (phase === 1) return lerp(1.00, 0.58, smooth(progress));
+  if (phase === 2) return lerp(0.58, 0.15, smooth(progress));
+  if (phase === 3) return lerp(0.15, 0.20, smooth(progress));
+  if (phase === 4) return lerp(0.20, 0.82, smooth(progress));
+  return lerp(0.82, 1.00, smooth(progress));
+}
+
+function polyPath(verts) {
+  if (!verts || verts.length < 3) return;
+  ctx.moveTo(verts[0].x, verts[0].y);
+  for (let i = 1; i < verts.length; i++) ctx.lineTo(verts[i].x, verts[i].y);
+  ctx.closePath();
+}
+function shrinkCell(cell, seed, f) {
+  return cell.map(v => ({ x: seed.x + (v.x - seed.x) * f, y: seed.y + (v.y - seed.y) * f }));
+}
+
+function drawBackground() { ctx.fillStyle = PORE; ctx.fillRect(0, 0, W, H); }
+
+function drawGrains(st) {
+  const BASE = 0.70, GROW = 0.22;
+  ctx.save();
+  ctx.beginPath(); ctx.rect(WELL_X + 1, 0, W, H); ctx.clip();
+
+  ctx.fillStyle = ASP;
+  seeds.forEach((s, si) => {
+    if (s.isBnd) return;
+    const cell = cells[si];
+    if (!cell || cell.length < 3) return;
+    const dep = depositFrac(s.nd, s.susc, st);
+    if (dep < 0.05) return;
+    ctx.beginPath();
+    polyPath(shrinkCell(cell, s, BASE + dep * GROW));
+    polyPath(shrinkCell(cell, s, BASE));
+    ctx.fill('evenodd');
+  });
+
+  ctx.fillStyle = GRAIN;
+  seeds.forEach((s, si) => {
+    if (s.isBnd) return;
+    const cell = cells[si];
+    if (!cell || cell.length < 3) return;
+    ctx.beginPath(); polyPath(shrinkCell(cell, s, BASE)); ctx.fill();
+  });
+
+  ctx.strokeStyle = GLINE; ctx.lineWidth = 0.6; ctx.globalAlpha = 0.55;
+  seeds.forEach((s, si) => {
+    if (s.isBnd) return;
+    const cell = cells[si];
+    if (!cell || cell.length < 3) return;
+    ctx.beginPath(); polyPath(shrinkCell(cell, s, BASE)); ctx.stroke();
+  });
+  ctx.globalAlpha = 1;
+  ctx.restore();
+}
+
+let oilOffset = 0, solvOffset = 0;
+
+function drawFlow(st) {
+  const { phase, progress } = st;
+  const front = getSolventFront(st);
+  const kk0   = getKoverK0(st);
+  ctx.save();
+  ctx.beginPath(); ctx.rect(WELL_X + 1, 0, W, H); ctx.clip();
+  ctx.lineCap = 'round';
+  ctx.setLineDash([3, 10]);
+
+  const showOil = phase < 3 || phase === 5;
+  if (showOil) {
+    const alpha = phase === 2 ? lerp(0.58, 0.04, smooth(progress))
+                : phase === 5 ? lerp(0.08, 0.58, smooth(progress)) : 0.58;
+    ctx.strokeStyle = OIL;
+    ctx.lineDashOffset = oilOffset;
+    throats.forEach(t => {
+      const dep = depositFrac(t.nd, t.susc, st);
+      if (dep > 0.92) return;
+      const cc1 = triCC[t.t1], cc2 = triCC[t.t2];
+      if (!cc1 || !cc2) return;
+      const [fr, to] = cc1.x >= cc2.x ? [cc1, cc2] : [cc2, cc1];
+      ctx.globalAlpha = alpha * (1 - dep * 0.85);
+      ctx.lineWidth   = Math.max(0.3, (1 - dep) * 1.5);
+      ctx.beginPath(); ctx.moveTo(fr.x, fr.y); ctx.lineTo(to.x, to.y); ctx.stroke();
+    });
+    ctx.globalAlpha = 1;
+  }
+
+  if (phase === 3 || phase === 4) {
+    const alpha = phase === 3 ? smooth(progress) * 0.70 : lerp(0.70, 0.28, smooth(progress));
+    ctx.strokeStyle = SOLV;
+    ctx.lineDashOffset = solvOffset;
+    throats.forEach(t => {
+      if (t.nd > front + 0.12) return;
+      const cc1 = triCC[t.t1], cc2 = triCC[t.t2];
+      if (!cc1 || !cc2) return;
+      const [fr, to] = cc1.x <= cc2.x ? [cc1, cc2] : [cc2, cc1];
+      const fade = clamp((front - t.nd + 0.08) / 0.16, 0, 1);
+      ctx.globalAlpha = alpha * fade;
+      ctx.lineWidth   = 1.7;
+      ctx.beginPath(); ctx.moveTo(fr.x, fr.y); ctx.lineTo(to.x, to.y); ctx.stroke();
+    });
+    ctx.globalAlpha = 1;
+  }
+
+  ctx.setLineDash([]); ctx.restore();
+}
+
+function drawWell() {
+  ctx.fillStyle = '#1a1a2a'; ctx.globalAlpha = 0.16;
+  ctx.fillRect(0, 0, WELL_X, H); ctx.globalAlpha = 1;
+  ctx.strokeStyle = '#1a1a2a'; ctx.lineWidth = 0.8; ctx.globalAlpha = 0.30;
+  ctx.beginPath(); ctx.moveTo(WELL_X, 0); ctx.lineTo(WELL_X, H); ctx.stroke(); ctx.globalAlpha = 1;
+  ctx.strokeStyle = '#1a1a2a'; ctx.lineWidth = 0.7; ctx.globalAlpha = 0.20;
+  const nPerf = 6;
+  for (let i = 0; i < nPerf; i++) {
+    const py = H * (i + 1) / (nPerf + 1);
+    ctx.beginPath(); ctx.moveTo(WELL_X, py); ctx.lineTo(WELL_X + 10, py); ctx.stroke();
+  }
+  ctx.globalAlpha = 1;
+}
+
+function drawAnnotations(st) {
+  const { phase, progress } = st;
+  const front = getSolventFront(st);
+  const kk0   = getKoverK0(st);
+  ctx.save();
+
+  const kPct  = (kk0 * 100).toFixed(0);
+  const kCol  = kk0 > 0.65 ? '#1d4ed8' : kk0 > 0.30 ? '#b45309' : '#8b1010';
+  const kLabel = `k/k₀ = ${kPct}%`;
+  ctx.font     = `bold 11px 'Fira Code', monospace`;
+  ctx.textAlign = 'right';
+  const km = ctx.measureText(kLabel);
+  ctx.fillStyle = 'rgba(232,227,218,0.82)';
+  ctx.fillRect(W - 14 - km.width, H - 26, km.width + 8, 18);
+  ctx.fillStyle = kCol; ctx.fillText(kLabel, W - 10, H - 12);
+
+  if (front > 0.02 && (phase === 3 || phase === 4)) {
+    const frontR = front * (W - WELL_X - 28);
+    const arcA   = phase === 3 ? smooth(progress) * 0.72 : lerp(0.72, 0.28, smooth(progress));
+    ctx.strokeStyle = `rgba(180,83,9,${arcA.toFixed(3)})`;
+    ctx.lineWidth   = 1.8; ctx.setLineDash([5, 8]);
+    ctx.beginPath(); ctx.arc(WELL_X, H / 2, frontR, -Math.PI * 0.68, Math.PI * 0.68); ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  ctx.font = `9px 'Fira Code', monospace`; ctx.fillStyle = '#9898aa'; ctx.globalAlpha = 0.62;
+  ctx.textAlign = 'left';  ctx.fillText('Near-wellbore', WELL_X + 7, 13);
+  ctx.textAlign = 'right'; ctx.fillText('Far field', W - 7, 13);
+  ctx.globalAlpha = 1; ctx.restore();
+}
+
+const phaseBar   = document.getElementById('asp-phaseBar');
+const phaseLabel = document.getElementById('asp-phaseLabel');
+const cycleTag   = document.getElementById('asp-cycleTag');
+
+function updateUI(st, sec) {
+  if (phaseBar)   { phaseBar.style.width = (st.cycleP * 100).toFixed(2) + '%'; phaseBar.style.background = st.col; }
+  if (phaseLabel) phaseLabel.textContent = st.label;
+  if (cycleTag)   cycleTag.textContent   = `↺ ${(CYCLE - sec % CYCLE).toFixed(1)}s`;
+}
+
+function resize() {
+  const rect = canvas.getBoundingClientRect();
+  dpr = Math.min(window.devicePixelRatio || 1, 2);
+  W   = rect.width;
+  H   = Math.round(W / (900 / 340));
+  canvas.width = W * dpr; canvas.height = H * dpr;
+  canvas.style.height = H + 'px';
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  buildNetwork();
+}
+window.addEventListener('resize', () => resize());
+resize();
+
+let t0 = null, prevT = 0;
+function frame(ts) {
+  if (!t0) t0 = ts;
+  T = (ts - t0) / 1000;
+  const dt  = T - prevT; prevT = T;
+  const st  = getState(T);
+  const kk0 = getKoverK0(st);
+  oilOffset  -= dt * Math.max(0.05, kk0) * 46;
+  solvOffset -= dt * 50;
+  drawBackground();
+  drawFlow(st);
+  drawGrains(st);
+  drawWell();
+  drawAnnotations(st);
+  updateUI(st, T);
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+
 })();
 </script>
 </body>

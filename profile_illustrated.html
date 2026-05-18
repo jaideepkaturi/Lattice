@@ -27,10 +27,11 @@
     html { scroll-behavior: smooth; }
     body { font-family: var(--body); background: var(--cream); color: var(--ink); line-height: 1.6; }
 
-    .page { max-width: 900px; margin: 0 auto; padding: 80px 48px 120px; }
+    .page { max-width: 1060px; margin: 0 auto; padding: 80px 52px 120px; }
 
     /* ── HERO ── */
-    .hero { padding-bottom: 64px; border-bottom: 1px solid var(--rule); margin-bottom: 72px; }
+    .hero { position: relative; padding-bottom: 64px; border-bottom: 1px solid var(--rule); margin-bottom: 72px; overflow: hidden; }
+    .hero-text { position: relative; z-index: 1; max-width: 560px; }
     .hero-location { font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-dim); margin-bottom: 16px; }
     .hero-name { font-family: var(--display); font-size: clamp(3.8rem,9vw,7rem); font-weight: 300; line-height: 0.92; letter-spacing: -0.02em; margin-bottom: 28px; }
     .hero-name em { font-style: italic; font-weight: 300; }
@@ -39,6 +40,7 @@
     .hero-contact { margin-top: 28px; display: flex; gap: 24px; flex-wrap: wrap; }
     .hero-contact a { font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.08em; color: var(--ink-dim); text-decoration: none; transition: color 0.15s; }
     .hero-contact a:hover { color: var(--blue); }
+    #hero-art { position: absolute; top: 0; right: -48px; bottom: 0; left: 46%; pointer-events: none; z-index: 0; }
 
     /* ── SECTION ── */
     .section { margin-bottom: 72px; }
@@ -302,6 +304,8 @@
     /* ── RESPONSIVE ── */
     @media (max-width: 700px) {
       .page { padding: 40px 24px 80px; }
+      .hero-text { max-width: none; }
+      #hero-art { width: 100%; right: 0; opacity: 0.5; }
       .pillars { grid-template-columns: 1fr; }
       .theme-panel { min-height: auto; padding: 28px 0; }
       .theme-panel.flip { direction: ltr; }
@@ -330,14 +334,17 @@
 
   <!-- ── HERO ── -->
   <header class="hero">
-    <div class="hero-location">Clinton, NJ &nbsp;·&nbsp; USA</div>
-    <h1 class="hero-name">Jaideep<br><em>Katuri</em></h1>
-    <div class="hero-role">Experimental Physicist &nbsp;·&nbsp; ExxonMobil</div>
-    <p class="hero-bio">Physicist working at the intersection of soft matter, biological systems, and microrobotics — building experimental apparatus and computational tools to study how small things move, self-organize, and respond to their environment.</p>
-    <div class="hero-contact">
-      <a href="mailto:jaideep.katuri@exxonmobil.com">jaideep.katuri@exxonmobil.com</a>
-      <a href="https://www.linkedin.com/in/jaideep-katuri/" target="_blank">LinkedIn</a>
+    <div class="hero-text">
+      <div class="hero-location">Clinton, NJ &nbsp;·&nbsp; USA</div>
+      <h1 class="hero-name">Jaideep<br><em>Katuri</em></h1>
+      <div class="hero-role">Experimental Physicist &nbsp;·&nbsp; ExxonMobil</div>
+      <p class="hero-bio">Physicist working at the intersection of soft matter, biological systems, and microrobotics — building experimental apparatus and computational tools to study how small things move, self-organize, and respond to their environment.</p>
+      <div class="hero-contact">
+        <a href="mailto:jaideep.katuri@exxonmobil.com">jaideep.katuri@exxonmobil.com</a>
+        <a href="https://www.linkedin.com/in/jaideep-katuri/" target="_blank">LinkedIn</a>
+      </div>
     </div>
+    <canvas id="hero-art" aria-hidden="true"></canvas>
   </header>
 
   <!-- ── EXPERTISE ── -->
@@ -776,7 +783,7 @@ function runWhenVisible(target, callback, options = {}) {
   function rn() { _s ^= _s << 13; _s ^= _s >>> 17; _s ^= _s << 5; return (_s >>> 0) / 4294967296; }
 
   let W, H, dpr;
-  let NC = 8;
+  let NC = 6;
   let clusters = [], fracs = [], props = [], ptcls = [];
   let rejuv = 0;
   let animStart = null, autoPlay = false, running = false;
@@ -815,7 +822,7 @@ function runWhenVisible(target, callback, options = {}) {
 
   function addBranches(parent, depth, ci, frontT) {
     if (depth > 2) return;
-    const n = depth === 1 ? 2 + Math.floor(rn() * 2) : (rn() < 0.52 ? 1 : 0);
+    const n = depth === 1 ? 1 + Math.floor(rn() * 2) : (rn() < 0.40 ? 1 : 0);
     for (let i = 0; i < n; i++) {
       const t = 0.12 + rn() * 0.76;
       const idx = Math.floor(parent.pts.length * t);
@@ -832,7 +839,7 @@ function runWhenVisible(target, callback, options = {}) {
   }
 
   function build() {
-    NC = 8;
+    NC = 6;
     sr(42);
     clusters = [];
     fracs = [];
@@ -1598,6 +1605,186 @@ function frame(ts) {
 }
 requestAnimationFrame(frame);
 
+})();
+
+// Pore-scale flow hero — transparent canvas, potential flow around stratified grain packing
+(function () {
+'use strict';
+const canvas = document.getElementById('hero-art');
+if (!canvas) return;
+const ctx = canvas.getContext('2d');
+
+let W, H, dpr;
+let grains = [];
+let ps = [];
+let raf;
+
+// ── Seeded LCG ────────────────────────────────────────────────────────────────
+function lcg(seed) {
+  let s = (seed >>> 0) || 1;
+  return () => { s = Math.imul(1664525, s) + 1013904223 | 0; return (s >>> 0) / 4294967296; };
+}
+
+// ── Stratified grain placement — ensures even distribution across canvas ──────
+function packGrains() {
+  const rng = lcg(0xf100f100);
+  grains = [];
+  const COLS = 6, ROWS = 5;
+  const cw = W / COLS, ch = H / ROWS;
+  for (let ci = 0; ci < COLS; ci++) {
+    for (let ri = 0; ri < ROWS; ri++) {
+      const r  = W * (0.044 + rng() * 0.040);
+      // jitter within cell, keep away from edges
+      const x  = cw * ci + r + rng() * Math.max(0, cw - 2 * r);
+      const y  = ch * ri + r + rng() * Math.max(0, ch - 2 * r);
+      let ok = true;
+      for (const g of grains) {
+        const dx = x - g.x, dy = y - g.y;
+        if (dx * dx + dy * dy < (r + g.r + 4) ** 2) { ok = false; break; }
+      }
+      if (ok) grains.push({ x, y, r });
+    }
+  }
+}
+
+// ── Potential flow: uniform Darcy + doublet per grain ─────────────────────────
+// Exact 2-D potential flow past cylinder: Δu = U·a²(y²−x²)/r⁴, Δv = −2U·a²xy/r⁴
+const U0 = 0.80, MAX_SPD = 2.8;
+
+function flowAt(px, py) {
+  let vx = U0, vy = 0;
+  for (const g of grains) {
+    const dx = px - g.x, dy = py - g.y;
+    const r2 = dx * dx + dy * dy;
+    if (r2 < (g.r * 0.6) ** 2) continue;
+    const a2 = g.r * g.r, r4 = r2 * r2;
+    vx += U0 * a2 * (dy * dy - dx * dx) / r4;
+    vy -= U0 * a2 * 2 * dx * dy / r4;
+  }
+  const spd = Math.sqrt(vx * vx + vy * vy);
+  if (spd > MAX_SPD) { vx = vx / spd * MAX_SPD; vy = vy / spd * MAX_SPD; }
+  return { vx, vy };
+}
+
+// ── Particles with stored trail history ───────────────────────────────────────
+const NP = 88, TLEN = 28;
+const BLUE = [29, 78, 216], AMBER = [180, 83, 9];
+
+function spawn(scatter) {
+  const c = Math.random() < 0.70 ? BLUE : AMBER;
+  return {
+    x: scatter ? Math.random() * W : -3,
+    y: Math.random() * H,
+    vx: U0, vy: 0,
+    r: c[0], g: c[1], b: c[2],
+    trail: [],
+  };
+}
+
+// ── Resize ────────────────────────────────────────────────────────────────────
+function resize() {
+  const rect = canvas.parentElement.getBoundingClientRect();
+  dpr = Math.min(window.devicePixelRatio || 1, 2);
+  W = rect.width; H = rect.height;
+  canvas.width  = Math.round(W * dpr);
+  canvas.height = Math.round(H * dpr);
+  canvas.style.width  = W + 'px';
+  canvas.style.height = H + 'px';
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+
+function init() {
+  resize();
+  packGrains();
+  ps = Array.from({ length: NP }, () => spawn(true));
+}
+
+// ── Grain rendering — faint outlines only, page bg shows through ──────────────
+function drawGrains() {
+  for (const g of grains) {
+    ctx.beginPath();
+    ctx.arc(g.x, g.y, g.r, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(160,152,140,0.13)';
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(120,114,104,0.32)';
+    ctx.lineWidth = 0.8;
+    ctx.stroke();
+  }
+}
+
+// ── Edge masks: left bleeds softly into text, right fades at page edge ────────
+function drawEdgeMask() {
+  // Left: cream fades to transparent over first 35% — particles emerge gradually
+  const lg = ctx.createLinearGradient(0, 0, W * 0.35, 0);
+  lg.addColorStop(0, 'rgba(247,243,237,1)');
+  lg.addColorStop(1, 'rgba(247,243,237,0)');
+  ctx.fillStyle = lg;
+  ctx.fillRect(0, 0, W * 0.35, H);
+  // Right: fade out at page edge
+  const rg = ctx.createLinearGradient(W * 0.78, 0, W, 0);
+  rg.addColorStop(0, 'rgba(247,243,237,0)');
+  rg.addColorStop(1, 'rgba(247,243,237,1)');
+  ctx.fillStyle = rg;
+  ctx.fillRect(W * 0.78, 0, W * 0.22, H);
+}
+
+// ── Frame ─────────────────────────────────────────────────────────────────────
+function frame() {
+  ctx.clearRect(0, 0, W, H);   // transparent — page cream shows through
+
+  drawGrains();
+
+  for (let i = 0; i < ps.length; i++) {
+    const p = ps[i];
+    const { vx, vy } = flowAt(p.x, p.y);
+    p.vx += (vx - p.vx) * 0.20;
+    p.vy += (vy - p.vy) * 0.20;
+    p.x += p.vx; p.y += p.vy;
+
+    // Respawn: exited right or inside grain
+    if (p.x > W + 4) { ps[i] = spawn(false); continue; }
+    let inside = false;
+    for (const g of grains) {
+      const dx = p.x - g.x, dy = p.y - g.y;
+      if (dx * dx + dy * dy < g.r * g.r) { inside = true; break; }
+    }
+    if (inside) { ps[i] = spawn(false); continue; }
+    if (p.y < 0) { p.y = 0; p.vy = Math.abs(p.vy) * 0.5; }
+    if (p.y > H) { p.y = H; p.vy = -Math.abs(p.vy) * 0.5; }
+
+    // Store trail
+    p.trail.push({ x: p.x, y: p.y });
+    if (p.trail.length > TLEN) p.trail.shift();
+
+    // Draw fading trail from history
+    for (let t = 1; t < p.trail.length; t++) {
+      const a = (t / p.trail.length) * 0.30;
+      ctx.strokeStyle = `rgba(${p.r},${p.g},${p.b},${a.toFixed(3)})`;
+      ctx.lineWidth = 0.9;
+      ctx.beginPath();
+      ctx.moveTo(p.trail[t - 1].x, p.trail[t - 1].y);
+      ctx.lineTo(p.trail[t].x, p.trail[t].y);
+      ctx.stroke();
+    }
+    // Head
+    ctx.fillStyle = `rgba(${p.r},${p.g},${p.b},0.68)`;
+    ctx.beginPath(); ctx.arc(p.x, p.y, 1.5, 0, Math.PI * 2); ctx.fill();
+  }
+
+  drawEdgeMask();  // feather right edge into page bg
+  raf = requestAnimationFrame(frame);
+}
+
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) cancelAnimationFrame(raf); else raf = requestAnimationFrame(frame);
+});
+window.addEventListener('resize', () => {
+  resize(); packGrains();
+  ps.forEach(p => { p.trail = []; });
+});
+
+init();
+raf = requestAnimationFrame(frame);
 })();
 </script>
 </body>

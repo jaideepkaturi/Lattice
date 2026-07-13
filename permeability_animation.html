@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Proppant-Pack Permeability — Damage & Remediation</title>
+<style>
+  html,body{margin:0;height:100%;background:#ffffff;overflow:hidden;
+    font-family:Arial,Helvetica,sans-serif;color:#1a1a1a;}
+  #stage{position:fixed;inset:0;display:flex;flex-direction:column;}
+  #canvasWrap{position:relative;flex:1 1 auto;min-height:0;}
+  canvas{position:absolute;inset:0;width:100%;height:100%;display:block;}
+  #bar{flex:0 0 auto;display:flex;align-items:center;gap:14px;
+    padding:12px 24px 16px;border-top:1px solid #ececf0;background:#fff;
+    -webkit-user-select:none;user-select:none;flex-wrap:wrap;}
+  .grp{display:inline-flex;align-items:center;gap:8px;}
+  .lbl{font-size:12px;color:#6b7280;font-weight:700;letter-spacing:.02em;}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;
+    height:34px;padding:0 13px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;
+    color:#1a1a1a;background:#f3f4f6;border:1px solid #d9dde2;font-family:inherit;
+    transition:background .15s,border-color .15s,color .15s;white-space:nowrap;}
+  .btn:hover{background:#e9ebef;}
+  .btn svg{width:12px;height:12px;fill:currentColor;}
+  .fluid.active{color:#fff;border-color:transparent;}
+  .fluid[data-f="clean"].active{background:#2f7fb5;}
+  .fluid[data-f="damage"].active{background:#a9762f;}
+  .fluid[data-f="treat"].active{background:#2f9e5b;}
+  .slwrap{display:inline-flex;align-items:center;gap:10px;min-width:170px;flex:1;}
+  input[type=range]{-webkit-appearance:none;appearance:none;flex:1;height:5px;border-radius:3px;
+    background:#dde1e6;outline:none;cursor:pointer;min-width:90px;}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;
+    background:#fff;border:2px solid #2f7fb5;box-shadow:0 1px 3px rgba(0,0,0,.2);cursor:grab;}
+  input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:#fff;border:2px solid #2f7fb5;}
+  #sep{flex:1 1 auto;}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="canvasWrap"><canvas id="c"></canvas></div>
+  <div id="bar">
+    <span class="lbl">INJECT</span>
+    <div class="grp">
+      <button class="btn fluid" data-f="clean">Clean fluid</button>
+      <button class="btn fluid" data-f="damage">Damaging agent</button>
+      <button class="btn fluid" data-f="treat">Treatment</button>
+    </div>
+    <div class="slwrap"><span class="lbl">PUMP</span>
+      <input type="range" id="pump" min="0" max="5" step="0.05" value="2.5"><span id="pumpv" style="font-size:12px;color:#374151;min-width:74px">2.5 V</span></div>
+    <span id="sep"></span>
+    <button class="btn" id="playBtn"><svg id="playIcon" viewBox="0 0 16 16"><path d="M4 3h3v10H4zM9 3h3v10H9z"/></svg><span id="playLbl">Pause</span></button>
+    <button class="btn" id="replayBtn"><svg viewBox="0 0 16 16"><path d="M8 3V0.5L4.5 4 8 7.5V5a3 3 0 1 1-3 3H3.4A4.6 4.6 0 1 0 8 3z"/></svg>Replay</button>
+  </div>
+</div>
+<script>
+(function(){
+"use strict";
+const LW=1280, LH=600;
+const canvas=document.getElementById("c"), ctx=canvas.getContext("2d");
+const flow=document.createElement("canvas"), fctx=flow.getContext("2d");   // offscreen streakline buffer
+let dpr=1,scale=1,offX=0,offY=0,cssW=LW,cssH=LH;
+function resize(){
+  dpr=Math.min(window.devicePixelRatio||1,2);
+  const w=canvas.parentElement.getBoundingClientRect(); cssW=w.width; cssH=w.height;
+  scale=Math.min(cssW/LW,cssH/LH); offX=(cssW-LW*scale)/2; offY=(cssH-LH*scale)/2;
+  canvas.width=Math.round(cssW*dpr); canvas.height=Math.round(cssH*dpr);
+  canvas.style.width=cssW+"px"; canvas.style.height=cssH+"px";
+  flow.width=canvas.width; flow.height=canvas.height;
+}
+function logical(){ ctx.setTransform(scale*dpr,0,0,scale*dpr,offX*dpr,offY*dpr); }
+function logicalF(){ fctx.setTransform(scale*dpr,0,0,scale*dpr,offX*dpr,offY*dpr); }
+window.addEventListener("resize",resize); resize();
+
+// ── palette ─────────────────────────────────────────────────────────
+const C={ ink:"#1a1a1a", muted:"#6b7280", faint:"#9aa3ad",
+  clean:"#2f7fb5", damage:"#a9762f", treat:"#2f9e5b",
+  deposit:"#9c6b2e", grain:"#d3d9df", grainE:"#9aa3ad", steel:"#5b6470",
+  kline:"#1f6f9c", band:{clean:"rgba(47,127,181,0.07)",damage:"rgba(169,118,47,0.12)",treat:"rgba(47,158,91,0.10)"} };
+function fluidColor(f){ return f==="damage"?C.damage:f==="treat"?C.treat:C.clean; }
+
+// ── hero geometry ───────────────────────────────────────────────────
+const hL=80,hR=1200,hTop=94,hBot=284;
+const NX=24, NY=5, dx=(hR-hL)/NX, dy=(hBot-hTop)/NY;
+const GMIN=0.0009;               // residual conductance so a throat is never perfectly solvable-singular
+
+// pore nodes at grid vertices
+const nodes=[];
+function nid(i,j){ return i*(NY+1)+j; }
+for(let i=0;i<=NX;i++) for(let j=0;j<=NY;j++){
+  nodes.push({ i,j, x:hL+i*dx, y:hTop+j*dy, fixed:(i===0||i===NX),
+               fixedVal:(i===0?1:0), p:(i===0?1:i===NX?0:0.5), inc:[] });
+}
+// throats (edges) between adjacent pores
+const edges=[];
+function addEdge(a,b){
+  const A=nodes[a],B=nodes[b];
+  const e={ a,b, c:0, g:1, flow:0, cPeak:0,
+    resist:Math.random()*0.6,            // treatment-resistant fraction of the deposit ⇒ partial recovery
+    mx:(A.x+B.x)/2, my:(A.y+B.y)/2,
+    len:Math.hypot(B.x-A.x,B.y-A.y),
+    nx:(B.x-A.x), ny:(B.y-A.y),
+    inlet:(A.i===0||B.i===0), outlet:(A.i===NX||B.i===NX),
+    g0:0.88+Math.random()*0.24 };        // mild throat-size polydispersity (clean pack ≈ axial flow)
+  const idx=edges.length; edges.push(e); A.inc.push(idx); B.inc.push(idx);
+}
+for(let i=0;i<=NX;i++) for(let j=0;j<=NY;j++){
+  if(i<NX) addEdge(nid(i,j),nid(i+1,j));   // horizontal throat
+  if(j<NY) addEdge(nid(i,j),nid(i,j+1));   // vertical throat
+}
+// proppant grains at cell centres (with polydispersity + jitter)
+const grains=[];
+for(let i=0;i<NX;i++) for(let j=0;j<NY;j++){
+  grains.push({ x:hL+(i+0.5)*dx+(Math.random()-0.5)*dx*0.16,
+                y:hTop+(j+0.5)*dy+(Math.random()-0.5)*dy*0.16,
+                r:0.40*Math.min(dx,dy)*(0.85+Math.random()*0.4) });
+}
+
+// ── network solve (Gauss–Seidel, warm-started) ──────────────────────
+function conductance(e){ const o=1-e.c; return e.g0*(GMIN+(1-GMIN)*o*o*o); }
+function solve(iters){
+  for(const e of edges) e.g=conductance(e);
+  for(let it=0; it<iters; it++){
+    for(const n of nodes){
+      if(n.fixed) continue;
+      let num=0,den=0;
+      for(const ei of n.inc){ const e=edges[ei]; const other=(nodes[e.a]===n)? e.b : e.a;
+        num+=e.g*nodes[other].p; den+=e.g; }
+      if(den>0) n.p=num/den;
+    }
+  }
+  let k=0, maxF=1e-9;
+  for(const e of edges){ e.flow=e.g*(nodes[e.a].p-nodes[e.b].p);
+    const af=Math.abs(e.flow); if(af>maxF)maxF=af;
+    if(e.inlet) k+=Math.abs(e.flow); }
+  return {k,maxF};
+}
+// baseline permeability (clean pack) — many sweeps so the long/thin grid is fully converged
+let sol=solve(500); const K0=sol.k;
+
+// ── particles (flow tracers, coloured by injected fluid) ────────────
+let activeFluid="clean", manualFluid="clean";     // declared here: spawnPart() reads activeFluid
+const NP=480, parts=[];
+function inletEdges(){ return edges.filter(e=>nodes[e.a].i===0||nodes[e.b].i===0); }
+const IN_E=inletEdges().map(e=>edges.indexOf(e));
+function fromTo(e){ return e.flow>=0 ? {f:e.a,t:e.b} : {f:e.b,t:e.a}; }
+function spawnPart(p){ p.e=IN_E[(Math.random()*IN_E.length)|0]; const e=edges[p.e];
+  // ensure we start at the inlet end
+  p.s=0; p.stuck=0; p.col=fluidColor(activeFluid); }
+for(let i=0;i<NP;i++){ const p={}; spawnPart(p); p.s=Math.random(); parts.push(p); }
+function advanceParts(dt,maxF,q){
+  for(const p of parts){
+    const e=edges[p.e], ft=fromTo(e);
+    const spd=(220*q*Math.abs(e.flow)/maxF);
+    if(spd<3){ p.stuck+=dt; if(p.stuck>1.1) spawnPart(p); continue; } else p.stuck=0;
+    p.s += spd*dt/e.len;
+    while(p.s>=1){
+      p.s-=1; const node=nodes[ft.t];
+      if(node.i===NX){ spawnPart(p); break; }          // reached outlet → recycle at inlet
+      // choose an outgoing throat (flow leaving this node), weighted by |flow|
+      let tot=0; const cand=[];
+      for(const ei of node.inc){ const e2=edges[ei]; const ft2=fromTo(e2);
+        if(nodes[ft2.f]===node && Math.abs(e2.flow)>1e-7){ cand.push(ei); tot+=Math.abs(e2.flow); } }
+      if(!cand.length){ spawnPart(p); break; }
+      let r=Math.random()*tot, pick=cand[0];
+      for(const ei of cand){ r-=Math.abs(edges[ei].flow); if(r<=0){ pick=ei; break; } }
+      p.e=pick;
+      break;
+    }
+  }
+}
+
+// ── dynamics / state ────────────────────────────────────────────────
+let mode="auto", running=true, autoT=0, last=performance.now();
+let pump=2.5;                                   // 0–5 V pump control
+const qOf = v => 0.35 + (v/5)*1.25;             // → normalised flow 0.35–1.6
+let PV=0, kNow=K0;
+const hist=[];                                  // {pv,k,fluid}
+const DAMAGE_RATE=3.2, TREAT_RATE=0.5;
+
+// autoplay narrative (seconds)
+function fluidAt(t){
+  if(t<3)  return "clean";     // baseline, establish k0
+  if(t<10) return "damage";    // damaging agent
+  if(t<12) return "clean";     // flush
+  if(t<19) return "treat";     // rejuvenation treatment
+  return "clean";              // post
+}
+function stateText(){
+  const f=activeFluid, kr=kNow/K0;
+  if(f==="damage") return "Injecting damaging agent — deposits bridge the pore throats, permeability falling";
+  if(f==="treat")  return "Rejuvenation treatment — clearing deposits from throats that still carry flow, permeability recovering";
+  if(kr>0.92)      return "Baseline — clean fluid through the open pack (establishing k₀)";
+  if(kr<0.85)      return "Clean flush — holding the current permeability state";
+  return "Clean fluid through the pack";
+}
+
+// ── controls ────────────────────────────────────────────────────────
+const pumpS=document.getElementById("pump"), pumpv=document.getElementById("pumpv");
+const playBtn=document.getElementById("playBtn"), playLbl=document.getElementById("playLbl"), playIcon=document.getElementById("playIcon");
+const ICON_PLAY="M4 3l9 5-9 5z", ICON_PAUSE="M4 3h3v10H4zM9 3h3v10H9z";
+function setPlayUI(){ playLbl.textContent=running?"Pause":"Play";
+  playIcon.querySelector("path").setAttribute("d",running?ICON_PAUSE:ICON_PLAY); }
+document.querySelectorAll(".fluid").forEach(b=>b.addEventListener("click",()=>{
+  mode="manual"; manualFluid=b.dataset.f; activeFluid=manualFluid; running=true; setPlayUI(); }));
+pumpS.addEventListener("input",()=>{ pump=parseFloat(pumpS.value); pumpv.textContent=pump.toFixed(2)+" V"; });
+playBtn.addEventListener("click",()=>{ running=!running; setPlayUI(); });
+document.getElementById("replayBtn").addEventListener("click",replay);
+function replay(){ mode="auto"; autoT=0; running=true; PV=0; hist.length=0;
+  for(const e of edges) e.c=0; sol=solve(500); kNow=K0; setPlayUI(); }
+window.addEventListener("keydown",e=>{ if(e.key===" "){e.preventDefault();playBtn.click();}
+  else if(e.key==="r"||e.key==="R") replay(); });
+
+// ════════════════════════ DRAW ═════════════════════════════════════
+function drawHero(q,maxF){
+  // tube interior
+  ctx.fillStyle="#f7f9fb"; ctx.fillRect(hL,hTop,hR-hL,hBot-hTop);
+
+  // flow tracers → offscreen trail buffer (soft streaklines); opaque grains then mask all but the pore space
+  fctx.setTransform(1,0,0,1,0,0);
+  fctx.globalCompositeOperation="destination-out";
+  fctx.fillStyle="rgba(0,0,0,0.075)"; fctx.fillRect(0,0,flow.width,flow.height);   // fade → trails
+  fctx.globalCompositeOperation="source-over"; logicalF();
+  for(const p of parts){
+    const e=edges[p.e], ft=fromTo(e), A=nodes[ft.f], B=nodes[ft.t];
+    const x=A.x+(B.x-A.x)*p.s, y=A.y+(B.y-A.y)*p.s;
+    const sf=Math.min(1,Math.abs(e.flow)/maxF);
+    fctx.globalAlpha=0.35+0.5*sf; fctx.fillStyle=p.col;
+    fctx.beginPath(); fctx.arc(x,y,1.25,0,6.2832); fctx.fill();
+  }
+  fctx.globalAlpha=1;
+  ctx.setTransform(1,0,0,1,0,0); ctx.drawImage(flow,0,0); logical();
+
+  // proppant grains (opaque)
+  for(const g of grains){
+    const rg=ctx.createRadialGradient(g.x-g.r*0.35,g.y-g.r*0.35,g.r*0.15,g.x,g.y,g.r);
+    rg.addColorStop(0,"#eef1f4"); rg.addColorStop(1,"#c2cad2");
+    ctx.fillStyle=rg; ctx.beginPath(); ctx.arc(g.x,g.y,g.r,0,6.2832); ctx.fill();
+    ctx.strokeStyle=C.grainE; ctx.lineWidth=1; ctx.stroke();
+  }
+
+  // deposits in throats (clog)
+  for(const e of edges){
+    if(e.c<0.05) continue;
+    const rad=Math.min(dx,dy)*0.20*e.c;
+    ctx.fillStyle=`rgba(156,107,46,${0.3+0.55*e.c})`;
+    ctx.beginPath(); ctx.arc(e.mx,e.my,rad,0,6.2832); ctx.fill();
+  }
+
+  // steel walls
+  ctx.strokeStyle=C.steel; ctx.lineWidth=6; ctx.lineCap="round";
+  ctx.beginPath(); ctx.moveTo(hL,hTop); ctx.lineTo(hR,hTop); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(hL,hBot); ctx.lineTo(hR,hBot); ctx.stroke();
+  ctx.lineCap="butt";
+
+  // inlet / outlet arrows
+  ctx.fillStyle=fluidColor(activeFluid);
+  arrow(hL-46,(hTop+hBot)/2, hL-8,(hTop+hBot)/2);
+  ctx.fillStyle=C.clean;
+  arrow(hR+8,(hTop+hBot)/2, hR+46,(hTop+hBot)/2);
+  ctx.fillStyle=C.muted; ctx.font="12px Arial"; ctx.textAlign="center";
+  ctx.fillText("inlet", hL-27, hTop-10); ctx.fillText("effluent", hR+27, hTop-10);
+
+  // pressure taps P1, P2 and ΔP bracket — kept in a dedicated band above the tube
+  const p1x=hL+dx*3, p2x=hR-dx*3, brY=58, tapY=74;
+  ctx.strokeStyle=C.faint; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(p1x,brY); ctx.lineTo(p2x,brY);
+  ctx.moveTo(p1x,brY); ctx.lineTo(p1x,tapY-8); ctx.moveTo(p2x,brY); ctx.lineTo(p2x,tapY-8); ctx.stroke();
+  ctx.fillStyle=C.ink; ctx.font="600 12px Arial"; ctx.textAlign="center"; ctx.textBaseline="alphabetic";
+  ctx.fillText("ΔP = P1 − P2", (p1x+p2x)/2, brY-6);
+  [ [p1x,"P1"], [p2x,"P2"] ].forEach(([tx,lb])=>{
+    ctx.strokeStyle=C.muted; ctx.lineWidth=1.4;
+    ctx.beginPath(); ctx.moveTo(tx,tapY+8); ctx.lineTo(tx,hTop); ctx.stroke();
+    ctx.fillStyle="#fff"; ctx.beginPath(); ctx.arc(tx,tapY,8,0,6.2832); ctx.fill();
+    ctx.strokeStyle=C.muted; ctx.stroke();
+    ctx.fillStyle=C.ink; ctx.font="600 10.5px Arial"; ctx.textAlign="center"; ctx.textBaseline="middle";
+    ctx.fillText(lb,tx,tapY+0.5); ctx.textBaseline="alphabetic";
+  });
+
+  // column caption
+  ctx.textAlign="left"; ctx.fillStyle=C.muted; ctx.font="12px Arial";
+  ctx.fillText("Packed steel column · ¼ in · 1 ft · proppant pack   (pore-scale view)", hL, hBot+22);
+}
+function arrow(x0,y0,x1,y1){
+  ctx.strokeStyle=ctx.fillStyle; ctx.lineWidth=3;
+  ctx.beginPath(); ctx.moveTo(x0,y0); ctx.lineTo(x1-6,y1); ctx.stroke();
+  const a=Math.atan2(y1-y0,x1-x0);
+  ctx.beginPath(); ctx.moveTo(x1,y1);
+  ctx.lineTo(x1-11*Math.cos(a-0.4),y1-11*Math.sin(a-0.4));
+  ctx.lineTo(x1-11*Math.cos(a+0.4),y1-11*Math.sin(a+0.4));
+  ctx.closePath(); ctx.fill();
+}
+
+// ── k/k0 plot ───────────────────────────────────────────────────────
+const pL=92,pR=1200,pTop=352,pBot=548;
+function px(pv,xmax){ return pL+(pv/xmax)*(pR-pL); }
+function py(v){ return pBot-(v/1.12)*(pBot-pTop); }
+function drawPlot(){
+  const xmax=Math.max(6, PV*1.04);
+  // phase-shaded bands
+  for(let i=1;i<hist.length;i++){
+    const a=hist[i-1],b=hist[i];
+    ctx.fillStyle=C.band[a.fluid]||"rgba(0,0,0,0)";
+    ctx.fillRect(px(a.pv,xmax),pTop, Math.max(0.6,px(b.pv,xmax)-px(a.pv,xmax)), pBot-pTop);
+  }
+  // frame + gridlines
+  ctx.strokeStyle="#e4e7ea"; ctx.lineWidth=1;
+  [0,0.25,0.5,0.75,1.0].forEach(v=>{ const y=py(v);
+    ctx.beginPath(); ctx.moveTo(pL,y); ctx.lineTo(pR,y); ctx.stroke();
+    ctx.fillStyle=C.faint; ctx.font="11px Arial"; ctx.textAlign="right";
+    ctx.fillText((v*100).toFixed(0)+"%", pL-8, y+4); });
+  ctx.strokeStyle="#c8ccd1"; ctx.lineWidth=1.2;
+  ctx.beginPath(); ctx.moveTo(pL,pTop-6); ctx.lineTo(pL,pBot); ctx.lineTo(pR,pBot); ctx.stroke();
+  // k0 reference
+  ctx.strokeStyle="#b7bec6"; ctx.setLineDash([4,4]); ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(pL,py(1)); ctx.lineTo(pR,py(1)); ctx.stroke(); ctx.setLineDash([]);
+  // k/k0 curve
+  if(hist.length>1){
+    ctx.strokeStyle=C.kline; ctx.lineWidth=2.4; ctx.lineJoin="round"; ctx.beginPath();
+    hist.forEach((h,i)=>{ const X=px(h.pv,xmax),Y=py(h.k/K0); i?ctx.lineTo(X,Y):ctx.moveTo(X,Y); });
+    ctx.stroke();
+    const last=hist[hist.length-1], LX=px(last.pv,xmax),LY=py(last.k/K0);
+    ctx.fillStyle=C.kline; ctx.beginPath(); ctx.arc(LX,LY,4.5,0,6.2832); ctx.fill();
+  }
+  // axis labels
+  ctx.fillStyle=C.ink; ctx.font="600 13px Arial"; ctx.textAlign="left";
+  ctx.fillText("k / k₀  — permeability vs baseline", pL, pTop-16);
+  ctx.fillStyle=C.muted; ctx.font="12px Arial"; ctx.textAlign="right";
+  ctx.fillText("pore volumes injected →", pR, pBot+22);
+  // phase legend
+  ctx.textAlign="left";
+  const leg=[["Clean",C.clean],["Damaging agent",C.damage],["Treatment",C.treat]]; let lx=pL+230;
+  leg.forEach(([t,c])=>{ ctx.fillStyle=c; ctx.fillRect(lx,pTop-26,12,12);
+    ctx.fillStyle=C.muted; ctx.font="12px Arial"; ctx.fillText(t,lx+17,pTop-16); lx+=Math.max(90,ctx.measureText(t).width+42); });
+}
+
+// ── live readouts ───────────────────────────────────────────────────
+function drawReadouts(){
+  const kr=kNow/K0, dP=K0/Math.max(kNow,1e-6);
+  ctx.textAlign="left"; ctx.fillStyle="#334155"; ctx.font="15px Arial";
+  ctx.fillText(stateText(), 80, 30);
+  // metric chips, right side
+  const bx=pR-330;
+  const chip=(x,label,val,col)=>{ ctx.textAlign="left";
+    ctx.fillStyle=C.muted; ctx.font="11.5px Arial"; ctx.fillText(label,x,pTop-40);
+    ctx.fillStyle=col; ctx.font="700 22px Arial"; ctx.fillText(val,x,pTop-18); };
+  chip(bx,      "PERMEABILITY  k/k₀", (kr*100).toFixed(0)+"%", C.kline);
+  chip(bx+165,  "MEASURED  ΔP", "×"+dP.toFixed(1), "#c0562a");
+}
+
+// ════════════════════════ FRAME ════════════════════════════════════
+function frame(now){
+  const dt=Math.min((now-last)/1000,0.05); last=now;
+  const q=qOf(pump);
+  if(running){
+    if(mode==="auto"){ autoT+=dt; activeFluid=fluidAt(autoT); }
+    // damage / remediation kinetics on each throat
+    const maxF=sol.maxF, kr=kNow/K0;
+    for(const e of edges){
+      const ff=Math.abs(e.flow)/maxF;
+      if(activeFluid==="damage" && kr>0.2){          // delivery ∝ throughput² ⇒ bridging self-arrests (partial plug)
+        e.c=Math.min(0.85, e.c + DAMAGE_RATE*q*Math.max(0,ff-0.08)*kr*kr*dt);
+        if(e.c>e.cPeak) e.cPeak=e.c;
+      } else if(activeFluid==="treat")               // clears soluble deposit; a treatment-resistant residue remains ⇒ partial recovery
+        e.c=Math.max(e.resist*e.cPeak, e.c - TREAT_RATE*q*ff*dt);
+    }
+    sol=solve(20); kNow=sol.k;
+    advanceParts(dt,sol.maxF,q);
+    PV += q*dt*0.14;
+    const lastH=hist[hist.length-1];
+    if(!lastH || PV-lastH.pv>0.012) hist.push({pv:PV,k:kNow,fluid:activeFluid});
+  }
+  // active-fluid button highlight
+  document.querySelectorAll(".fluid").forEach(b=>b.classList.toggle("active", b.dataset.f===activeFluid));
+
+  logical();
+  ctx.clearRect(-offX/scale,-offY/scale, LW+2*offX/scale, LH+2*offY/scale);
+  drawHero(q, sol.maxF);
+  drawPlot();
+  drawReadouts();
+  requestAnimationFrame(frame);
+}
+setPlayUI(); pumpv.textContent=pump.toFixed(2)+" V";
+requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>

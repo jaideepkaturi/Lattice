@@ -1,0 +1,169 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 644 290" font-family="Arial, 'Helvetica Neue', sans-serif">
+  <style>
+    .unit{fill:#ffffff;stroke:#c2ccd4;stroke-width:1.4;}
+    .pipe{fill:none;stroke:#b8c2cc;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;}
+    .flow{fill:none;stroke:#10897e;stroke-width:2;stroke-dasharray:1 6;stroke-linecap:round;}
+    .flow-c{stroke:#8a97a4;}
+    .optic{fill:none;stroke:#7c5cc9;stroke-width:1.4;stroke-dasharray:2.5 3.5;stroke-linecap:round;}
+    .cap{font-size:11px;font-weight:700;fill:#26323d;text-anchor:middle;letter-spacing:.06em;}
+    .cap2{font-size:9.5px;font-weight:600;fill:#4a5560;text-anchor:middle;}
+    .cap2s{font-size:8.5px;font-weight:600;fill:#7a8794;text-anchor:middle;}
+    .cap3{font-size:9px;font-weight:700;fill:#66727f;letter-spacing:.11em;}
+    .sub{font-size:9px;font-weight:500;fill:#8a97a4;text-anchor:middle;}
+    .ghdr{font-size:9px;font-weight:700;fill:#26323d;text-anchor:middle;letter-spacing:.02em;}
+    .axl{font-size:8px;font-weight:600;fill:#9aa6b0;}
+    .onl{font-size:8px;font-weight:700;fill:#c0762f;text-anchor:middle;}
+    .note{font-size:8px;font-weight:600;fill:#8a97a4;text-anchor:middle;}
+    .noteT{font-size:8px;font-weight:700;fill:#7c5cc9;text-anchor:middle;}
+    .regime{font-size:7.5px;font-weight:600;fill:#9aa6b0;text-anchor:middle;}
+    .lead{fill:none;stroke:#ccd4db;stroke-width:1;}
+    .legh{font-size:8.5px;font-weight:700;fill:#66727f;letter-spacing:.09em;}
+    .legt{font-size:8.5px;font-weight:600;fill:#5f6b78;}
+    .mline{font-size:8.5px;font-weight:600;fill:#8a97a4;text-anchor:end;}
+  </style>
+
+  <defs>
+    <clipPath id="resClip"><rect x="24" y="44" width="84" height="168" rx="4"/></clipPath>
+    <clipPath id="cellClip"><rect x="212" y="58" width="68" height="146" rx="2"/></clipPath>
+    <clipPath id="fcClip"><rect x="426" y="168" width="13" height="24" rx="2"/></clipPath>
+    <g id="rotor"><line x1="0" y1="0" x2="0" y2="-8"/><line x1="0" y1="0" x2="6.9" y2="4"/><line x1="0" y1="0" x2="-6.9" y2="4"/></g>
+  </defs>
+
+  <!-- ============ GRAPH PANEL (top-right) ============ -->
+  <rect class="unit" x="376" y="20" width="248" height="100" rx="5"/>
+  <text class="ghdr" x="500" y="34">% transmittance  vs.  titrant added</text>
+  <line x1="400" y1="46"  x2="606" y2="46"  stroke="#eef2f3" stroke-width="1"/>
+  <line x1="400" y1="76"  x2="606" y2="76"  stroke="#eef2f3" stroke-width="1"/>
+  <line x1="400" y1="106" x2="606" y2="106" stroke="#e4e9ea" stroke-width="1"/>
+  <line x1="400" y1="46"  x2="400" y2="106" stroke="#cfd6db" stroke-width="1"/>
+  <text class="axl" x="396" y="49"  text-anchor="end">100</text>
+  <text class="axl" x="396" y="108" text-anchor="end">0</text>
+  <text class="axl" x="606" y="116" text-anchor="end">titrant &#8594;</text>
+  <text class="regime" x="452" y="76">clear &#183; stable</text>
+  <text class="regime" x="582" y="64">flocculated</text>
+  <path d="M406 50 L510 50 Q536 52 548 86 T600 102" fill="none" stroke="#e6ecec" stroke-width="2.4"/>
+  <path id="spark" d="M406 50 L510 50 Q536 52 548 86 T600 102" fill="none" stroke="#10897e" stroke-width="2.6"
+        stroke-linecap="round" pathLength="1000" stroke-dasharray="1000" stroke-dashoffset="0">
+    <animate attributeName="stroke-dashoffset" values="1000;1000;534;0;0" keyTimes="0;0.05;0.62;0.9;1" dur="14s" repeatCount="indefinite"/>
+  </path>
+  <g>
+    <animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;0.6;0.63;0.97;1" dur="14s" repeatCount="indefinite"/>
+    <line x1="510" y1="46" x2="510" y2="106" stroke="#c0762f" stroke-width="1.2" stroke-dasharray="3 3"/>
+    <text class="onl" x="510" y="43">onset</text>
+  </g>
+  <circle r="3" fill="#10897e">
+    <animateMotion dur="14s" repeatCount="indefinite" keyPoints="0;0;0.466;1;1" keyTimes="0;0.05;0.62;0.9;1" calcMode="linear">
+      <mpath xlink:href="#spark"/>
+    </animateMotion>
+  </circle>
+  <path class="optic" d="M527 166 V120"><animate attributeName="stroke-dashoffset" from="0" to="-6" dur="1s" repeatCount="indefinite"/></path>
+
+  <!-- ============ FLOWS (animated dashes, no tube backing) ============ -->
+  <path class="flow" d="M108 180 H137"><animate attributeName="stroke-dashoffset" from="0" to="-7" dur=".9s" repeatCount="indefinite"/></path>
+  <path class="flow" d="M163 180 H196"><animate attributeName="stroke-dashoffset" from="0" to="-7" dur=".9s" repeatCount="indefinite"/></path>
+  <path class="flow flow-c" d="M296 180 H323"><animate attributeName="stroke-dashoffset" from="0" to="-7" dur="1s" repeatCount="indefinite"/></path>
+  <path class="flow flow-c" d="M349 180 H376"><animate attributeName="stroke-dashoffset" from="0" to="-7" dur="1s" repeatCount="indefinite"/></path>
+  <path class="flow flow-c" d="M500 230 V242 H246 V212"><animate attributeName="stroke-dashoffset" from="0" to="-7" dur="1s" repeatCount="indefinite"/></path>
+
+  <!-- ============ TITRANT RESERVOIR ============ -->
+  <rect class="unit" x="24" y="44" width="84" height="168" rx="4"/>
+  <rect clip-path="url(#resClip)" x="24" y="96" width="84" height="116" fill="#43c9bd">
+    <animate attributeName="y" values="96;196;196" keyTimes="0;0.7;1" dur="14s" repeatCount="indefinite"/>
+    <animate attributeName="height" values="116;16;16" keyTimes="0;0.7;1" dur="14s" repeatCount="indefinite"/>
+  </rect>
+  <text class="cap" x="66" y="34">TITRANT</text>
+  <text class="sub" x="66" y="228">n-heptane &#183; precipitant</text>
+
+  <!-- ============ TITRANT PUMP ============ -->
+  <circle class="unit" cx="150" cy="180" r="13"/>
+  <use xlink:href="#rotor" x="150" y="180" stroke="#10897e" stroke-width="1.8" stroke-linecap="round">
+    <animateTransform attributeName="transform" type="rotate" from="0 150 180" to="360 150 180" dur="2.6s" repeatCount="indefinite"/>
+  </use>
+  <circle cx="150" cy="180" r="2.4" fill="#10897e"/>
+  <text class="cap2" x="150" y="202">titrant pump</text>
+  <text class="cap2s" x="150" y="213">low flow</text>
+
+  <!-- ============ SAMPLE CELL ============ -->
+  <rect class="unit" x="196" y="44" width="100" height="168" rx="4"/>
+  <rect x="204" y="52" width="84" height="152" rx="3" fill="#eef9f8" stroke="#cfe6e3" stroke-width="1.2"/>
+  <rect x="212" y="58" width="68" height="146" rx="2" fill="#ffffff" stroke="#c6d2d8" stroke-width="1.2"/>
+  <rect clip-path="url(#cellClip)" x="212" y="120" width="68" height="84" fill="#2b323b">
+    <animate attributeName="y" values="120;114;114" keyTimes="0;0.7;1" dur="14s" repeatCount="indefinite"/>
+    <animate attributeName="height" values="84;90;90" keyTimes="0;0.7;1" dur="14s" repeatCount="indefinite"/>
+  </rect>
+  <g clip-path="url(#cellClip)" opacity="0" fill="#6c7684">
+    <animate attributeName="opacity" values="0;0;0.85;0.85;0" keyTimes="0;0.62;0.82;0.95;1" dur="14s" repeatCount="indefinite"/>
+    <circle cx="224" cy="132" r="1.8"/><circle cx="246" cy="128" r="1.4"/><circle cx="266" cy="136" r="1.9"/>
+    <circle cx="232" cy="150" r="1.6"/><circle cx="258" cy="154" r="1.3"/><circle cx="270" cy="146" r="1.7"/>
+    <circle cx="218" cy="144" r="1.3"/><circle cx="250" cy="144" r="1.8"/><circle cx="264" cy="168" r="1.5"/>
+    <circle cx="228" cy="172" r="1.6"/><circle cx="242" cy="162" r="1.3"/><circle cx="256" cy="182" r="1.6"/>
+  </g>
+  <rect x="233" y="193" width="26" height="6" rx="3" fill="#43c9bd">
+    <animate attributeName="width" values="26;2;26" keyTimes="0;0.5;1" dur=".55s" repeatCount="indefinite"/>
+    <animate attributeName="x" values="233;245;233" keyTimes="0;0.5;1" dur=".55s" repeatCount="indefinite"/>
+  </rect>
+  <text class="cap" x="246" y="34">SAMPLE CELL</text>
+
+  <!-- jacket annotation -->
+  <path class="lead" d="M172 100 L206 114"/>
+  <circle cx="206" cy="114" r="1.6" fill="#aab4bd"/>
+  <text class="note" x="150" y="94">thermostatted</text>
+  <text class="note" x="150" y="104">water jacket</text>
+
+  <!-- ============ CIRCULATION PUMP ============ -->
+  <circle class="unit" cx="336" cy="180" r="13"/>
+  <use xlink:href="#rotor" x="336" y="180" stroke="#7a8794" stroke-width="1.8" stroke-linecap="round">
+    <animateTransform attributeName="transform" type="rotate" from="0 336 180" to="360 336 180" dur="0.9s" repeatCount="indefinite"/>
+  </use>
+  <circle cx="336" cy="180" r="2.4" fill="#7a8794"/>
+  <text class="cap2" x="336" y="202">circ. pump</text>
+  <text class="cap2s" x="336" y="213">high flow</text>
+
+  <!-- circulation annotation -->
+  <path class="lead" d="M336 108 V166"/>
+  <circle cx="336" cy="166" r="1.6" fill="#aab4bd"/>
+  <text class="note" x="336" y="94">continuous</text>
+  <text class="note" x="336" y="104">recirculation</text>
+
+  <!-- ============ DETECTION ============ -->
+  <rect class="unit" x="376" y="130" width="248" height="100" rx="5"/>
+  <text class="cap3" x="388" y="150">DETECTION</text>
+
+  <rect x="388" y="168" width="24" height="24" rx="3" fill="#1b2530"/>
+  <circle cx="400" cy="180" r="7" fill="#9a80e8" opacity="0.2">
+    <animate attributeName="r" values="6;8.2;6" dur="3s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.12;0.32;0.12" dur="3s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="400" cy="180" r="3.4" fill="#c3b6f5"/><circle cx="400" cy="180" r="1.3" fill="#ffffff"/>
+  <text class="sub" x="400" y="208">source</text>
+  <text class="noteT" x="400" y="219">near-IR</text>
+
+  <path class="optic" d="M412 180 H425"><animate attributeName="stroke-dashoffset" from="0" to="-6" dur=".8s" repeatCount="indefinite"/></path>
+
+  <rect x="426" y="168" width="13" height="24" rx="2" fill="#ffffff" stroke="#8a97a4" stroke-width="1.2"/>
+  <rect clip-path="url(#fcClip)" x="426" y="168" width="13" height="24" fill="#3a4656">
+    <animate attributeName="fill" values="#3a4656;#3a4656;#20262e;#20262e;#3a4656" keyTimes="0;0.62;0.82;0.95;1" dur="14s" repeatCount="indefinite"/>
+  </rect>
+  <text class="sub" x="432" y="208">flow cell</text>
+
+  <path class="optic" d="M439 180 H452"><animate attributeName="stroke-dashoffset" from="0" to="-6" dur=".8s" repeatCount="indefinite"/></path>
+
+  <rect x="452" y="166" width="150" height="30" rx="4" fill="#f4f8f8" stroke="#b9c6cb" stroke-width="1.2"/>
+  <g stroke="#10897e" stroke-width="1.6" stroke-linecap="round">
+    <line x1="464" y1="186" x2="464" y2="179"/><line x1="470" y1="186" x2="470" y2="175"/>
+    <line x1="476" y1="186" x2="476" y2="181"/><line x1="482" y1="186" x2="482" y2="177"/>
+  </g>
+  <text x="540" y="185" font-size="9" font-weight="700" fill="#3a4656" text-anchor="middle">spectrometer</text>
+
+  <!-- ============ FLOW LEGEND (bottom-left) ============ -->
+  <line x1="30" y1="256" x2="58" y2="256" stroke="#10897e" stroke-width="2"   stroke-dasharray="1 6"     stroke-linecap="round"/>
+  <text class="legt" x="66" y="259">precipitant titrant</text>
+  <line x1="30" y1="270" x2="58" y2="270" stroke="#8a97a4" stroke-width="2"   stroke-dasharray="1 6"     stroke-linecap="round"/>
+  <text class="legt" x="66" y="273">sample circulation loop</text>
+  <line x1="30" y1="284" x2="58" y2="284" stroke="#7c5cc9" stroke-width="1.6" stroke-dasharray="2.5 3.5" stroke-linecap="round"/>
+  <text class="legt" x="66" y="287">optical / signal path</text>
+
+  <!-- ============ INTERPRETATION (bottom-right) ============ -->
+  <text class="mline" x="620" y="264">Automated flocculation titration &#183; ASTM E1999-style</text>
+  <text class="mline" x="620" y="278">flocculation onset &#8594; <tspan fill="#0f9488" font-weight="700">SBN / IN</tspan> &#183; P-value</text>
+</svg>
